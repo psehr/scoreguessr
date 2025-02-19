@@ -5,11 +5,7 @@ import React, { useEffect, useState } from "react";
 
 import { v2 } from "osu-api-extended";
 import { osuAuth } from "./auth";
-import { lookupMaps } from "./api_fct";
-import {
-  SearchBeatmaps,
-  Beatmapset,
-} from "osu-api-extended/dist/types/v2/search_all";
+import { MapSearch } from "./_components/MapSearch";
 
 export type Score = {
   player_name: string;
@@ -62,24 +58,30 @@ export default function Home() {
     initialScoreDraft,
   ]);
 
-  const [mapSearchResults, setMapSearchResults] = useState<
-    Beatmapset[] | undefined
-  >();
+  const [mapSearchQuery, setMapSearchQuery] = useState<string>("");
+  const [debouncedQuery, setDebouncedQuery] = useState<string>("");
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  useState<number>(0);
+
+  // Debounced user input query for smoother map search and less API calls
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      setIsLoading(false);
+      setDebouncedQuery(mapSearchQuery);
+    }, 400);
+
+    return () => {
+      setIsLoading(true);
+      clearTimeout(handler);
+    };
+  }, [mapSearchQuery]);
 
   useEffect(() => {
-    console.log(scoreDrafts);
     const lastDraft = scoreDrafts[scoreDrafts.length - 1];
     lastDraft.isValidMap && lastDraft.isValidPlayer && lastDraft.isValidYear
       ? console.log("GG")
       : null;
   }, [scoreDrafts]);
-
-  useEffect(() => {
-    lookupMaps("freedom dive").then((maps) => {
-      setMapSearchResults(maps.beatmapsets);
-      console.log(mapSearchResults);
-    });
-  }, []);
 
   const renderRows = () => {
     return scoreDrafts.map((scoreDraft) => {
@@ -123,7 +125,7 @@ export default function Home() {
   return (
     <div className="w-full h-full flex flex-col place-content-start items-center space-y-4">
       <div className="text-6xl font-bold p-8">
-        <p>{}</p>
+        <p>Scoreguessr</p>
       </div>
       <div className="w-2/3 min-h-fit h-2/3 px-8 text-center place-content-start items-center overflow-auto">
         <table className="table-fixed w-full h-fit bg-black/40 rounded-xl font-bold overflow-hidden">
@@ -141,6 +143,14 @@ export default function Home() {
       <div className="w-2/3 h-24 p-8 flex flex-row rounded-xl text-center items-center space-x-4">
         <form
           className="w-full h-full flex flex-row space-x-4"
+          onChange={(e) => {
+            const userInputBeatmap = (
+              e.currentTarget.elements.namedItem("beatmap") as HTMLInputElement
+            )?.value;
+            if (userInputBeatmap.length > 3) {
+              setMapSearchQuery(userInputBeatmap);
+            }
+          }}
           onSubmit={(e) => {
             e.preventDefault();
             const guessedPlayer = (
@@ -209,7 +219,11 @@ export default function Home() {
                 Correct map!
               </p>
             ) : (
-              <input type="text" name="beatmap" placeholder="Guess map.." />
+              <div className="relative w-full h-full">
+                {isLoading ? null : <MapSearch query={debouncedQuery} />}
+
+                <input type="text" name="beatmap" placeholder="Guess map.." />
+              </div>
             )}
           </div>
           <div className="w-1/4 h-12">

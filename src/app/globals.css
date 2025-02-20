@@ -4,5 +4,5 @@
 
 input,
 textarea {
-  @apply w-full h-full rounded-xl text-center bg-slate-950;
+  @apply w-full h-full rounded-xl text-center bg-black/40;
 }

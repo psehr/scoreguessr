@@ -1,30 +1,8 @@
 "use client";
 
-import Image from "next/image";
 import React, { useEffect, useState } from "react";
-
-import { v2 } from "osu-api-extended";
-import { osuAuth } from "./auth";
-import { MapSearch } from "./_components/MapSearch";
-
-export type Score = {
-  player_name: string;
-  player_id: number;
-  beatmap_name: string;
-  beatmap_id: number;
-  year: number;
-  pp: number;
-  day: number;
-};
-
-export type ScoreDraft = {
-  attempt: number;
-  score: Score;
-  isValidPlayer: boolean;
-  isValidMap: boolean;
-  isValidYear: boolean;
-  isValidPP: boolean;
-};
+import { BeatmapSimple, Score, ScoreDraft } from "./types";
+import MapSearch, { BeatmapCard } from "./views/MapSearch";
 
 const CORRECT_SCORE: Score = {
   player_name: "Cookiezi",
@@ -37,6 +15,7 @@ const CORRECT_SCORE: Score = {
 };
 
 export default function Home() {
+  const [currentView, setCurrentView] = useState<string>("main");
   const initialScoreDraft = {
     attempt: 0,
     score: {
@@ -58,23 +37,7 @@ export default function Home() {
     initialScoreDraft,
   ]);
 
-  const [mapSearchQuery, setMapSearchQuery] = useState<string>("");
-  const [debouncedQuery, setDebouncedQuery] = useState<string>("");
-  const [isLoading, setIsLoading] = useState<boolean>(false);
-  useState<number>(0);
-
-  // Debounced user input query for smoother map search and less API calls
-  useEffect(() => {
-    const handler = setTimeout(() => {
-      setIsLoading(false);
-      setDebouncedQuery(mapSearchQuery);
-    }, 400);
-
-    return () => {
-      setIsLoading(true);
-      clearTimeout(handler);
-    };
-  }, [mapSearchQuery]);
+  const [selectedBeatmap, setSelectedBeatmap] = useState<BeatmapSimple>();
 
   useEffect(() => {
     const lastDraft = scoreDrafts[scoreDrafts.length - 1];
@@ -123,9 +86,9 @@ export default function Home() {
   };
 
   return (
-    <div className="w-full h-full flex flex-col place-content-start items-center space-y-4">
+    <div className="relative w-full h-full flex flex-col place-content-start items-center">
       <div className="text-6xl font-bold p-8">
-        <p>Scoreguessr</p>
+        <p>{selectedBeatmap?.id}</p>
       </div>
       <div className="w-2/3 min-h-fit h-2/3 px-8 text-center place-content-start items-center overflow-auto">
         <table className="table-fixed w-full h-fit bg-black/40 rounded-xl font-bold overflow-hidden">
@@ -143,14 +106,6 @@ export default function Home() {
       <div className="w-2/3 h-24 p-8 flex flex-row rounded-xl text-center items-center space-x-4">
         <form
           className="w-full h-full flex flex-row space-x-4"
-          onChange={(e) => {
-            const userInputBeatmap = (
-              e.currentTarget.elements.namedItem("beatmap") as HTMLInputElement
-            )?.value;
-            if (userInputBeatmap.length > 3) {
-              setMapSearchQuery(userInputBeatmap);
-            }
-          }}
           onSubmit={(e) => {
             e.preventDefault();
             const guessedPlayer = (
@@ -220,9 +175,15 @@ export default function Home() {
               </p>
             ) : (
               <div className="relative w-full h-full">
-                {isLoading ? null : <MapSearch query={debouncedQuery} />}
-
-                <input type="text" name="beatmap" placeholder="Guess map.." />
+                <button
+                  className="w-full h-full rounded-xl bg-black/40 text-gray-400 hover:bg-black/40"
+                  onClick={() => setCurrentView("MapSearch")}
+                >
+                  Guess map..
+                </button>
+                {selectedBeatmap ? (
+                  <BeatmapCard beatmap={selectedBeatmap} />
+                ) : null}
               </div>
             )}
           </div>
@@ -241,6 +202,13 @@ export default function Home() {
       <div className="absolute bottom-2 text-gray-400">
         Next score in 12 hours (01:00 UTC) - Made by @psehr
       </div>
+      {currentView === "MapSearch" ? (
+        <MapSearch
+          selectedBeatmap={selectedBeatmap}
+          setSelectedBeatmap={setSelectedBeatmap}
+          setSelectedView={setCurrentView}
+        />
+      ) : null}
     </div>
   );
 }

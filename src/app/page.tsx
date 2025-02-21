@@ -1,8 +1,11 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { BeatmapSimple, Score, ScoreDraft } from "./types";
+import { BeatmapSimple, PlayerSimple, Score, ScoreDraft } from "./types";
 import MapSearch, { BeatmapCard } from "./views/MapSearch";
+
+import { LuSquarePen } from "react-icons/lu";
+import PlayerSearch from "./views/PlayerSearch";
 
 const CORRECT_SCORE: Score = {
   player_name: "Cookiezi",
@@ -38,6 +41,7 @@ export default function Home() {
   ]);
 
   const [selectedBeatmap, setSelectedBeatmap] = useState<BeatmapSimple>();
+  const [selectedPlayer, setSelectedPlayer] = useState<PlayerSimple>();
 
   useEffect(() => {
     const lastDraft = scoreDrafts[scoreDrafts.length - 1];
@@ -88,7 +92,7 @@ export default function Home() {
   return (
     <div className="relative w-full h-full flex flex-col place-content-start items-center">
       <div className="text-6xl font-bold p-8">
-        <p>{selectedBeatmap?.id}</p>
+        <p>Scoreguessr</p>
       </div>
       <div className="w-2/3 min-h-fit h-2/3 px-8 text-center place-content-start items-center overflow-auto">
         <table className="table-fixed w-full h-fit bg-black/40 rounded-xl font-bold overflow-hidden">
@@ -165,7 +169,31 @@ export default function Home() {
                 Correct player!
               </p>
             ) : (
-              <input type="text" name="player" placeholder="Guess player.." />
+              <div className="relative w-full h-full">
+                {selectedPlayer ? (
+                  <div className="w-full h-full flex flex-row items-center rounded-xl bg-black/40 px-2">
+                    <p>{selectedPlayer.username}</p>
+                    <LuSquarePen
+                      size={30}
+                      onClick={(e) => {
+                        e.preventDefault();
+                        setCurrentView("PlayerSearch");
+                      }}
+                      className="cursor-pointer"
+                    />
+                  </div>
+                ) : (
+                  <button
+                    className="w-full h-full rounded-xl bg-black/40 text-gray-400 hover:bg-black/40"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      setCurrentView("PlayerSearch");
+                    }}
+                  >
+                    Guess player..
+                  </button>
+                )}
+              </div>
             )}
           </div>
           <div className="w-1/2 h-12">
@@ -175,15 +203,29 @@ export default function Home() {
               </p>
             ) : (
               <div className="relative w-full h-full">
-                <button
-                  className="w-full h-full rounded-xl bg-black/40 text-gray-400 hover:bg-black/40"
-                  onClick={() => setCurrentView("MapSearch")}
-                >
-                  Guess map..
-                </button>
                 {selectedBeatmap ? (
-                  <BeatmapCard beatmap={selectedBeatmap} />
-                ) : null}
+                  <div className="w-full h-full flex flex-row items-center rounded-xl bg-black/40 px-2">
+                    <BeatmapCard beatmap={selectedBeatmap} />
+                    <LuSquarePen
+                      size={30}
+                      onClick={(e) => {
+                        e.preventDefault();
+                        setCurrentView("MapSearch");
+                      }}
+                      className="cursor-pointer"
+                    />
+                  </div>
+                ) : (
+                  <button
+                    className="w-full h-full rounded-xl bg-black/40 text-gray-400 hover:bg-black/40"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      setCurrentView("MapSearch");
+                    }}
+                  >
+                    Guess map..
+                  </button>
+                )}
               </div>
             )}
           </div>
@@ -206,6 +248,13 @@ export default function Home() {
         <MapSearch
           selectedBeatmap={selectedBeatmap}
           setSelectedBeatmap={setSelectedBeatmap}
+          setSelectedView={setCurrentView}
+        />
+      ) : null}
+      {currentView === "PlayerSearch" ? (
+        <PlayerSearch
+          selectedPlayer={selectedPlayer}
+          setSelectedPlayer={setSelectedPlayer}
           setSelectedView={setCurrentView}
         />
       ) : null}

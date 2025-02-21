@@ -16,6 +16,13 @@ export type BeatmapSimple = {
   cover: string;
 };
 
+export type PlayerSimple = {
+  username: string;
+  id: number;
+  avatar: string;
+  country_code: string;
+};
+
 export type ScoreDraft = {
   attempt: number;
   score: Score;

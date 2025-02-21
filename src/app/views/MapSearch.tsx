@@ -108,7 +108,10 @@ export default function MapSearch({
                   <div className="w-1/3 flex flex-row place-content-end items-center px-2">
                     <button
                       className="px-4 p-1 bg-blue-700 hover:bg-blue-600 rounded-xl"
-                      onClick={() => setSelectedBeatmap(beatmap)}
+                      onClick={(e) => {
+                        setSelectedView("main");
+                        setSelectedBeatmap(beatmap);
+                      }}
                     >
                       Select beatmap
                     </button>

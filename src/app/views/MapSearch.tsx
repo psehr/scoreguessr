@@ -17,9 +17,15 @@ export function Loading() {
   );
 }
 
-export const BeatmapCard = ({ beatmap }: { beatmap: BeatmapSimple }) => {
+export const BeatmapCard = ({
+  beatmap,
+  simple,
+}: {
+  beatmap: BeatmapSimple;
+  simple?: boolean;
+}) => {
   return (
-    <div className="w-full h-full flex flex-row place-content-start items-center space-x-2">
+    <div className="w-fit h-full flex flex-row place-content-start items-center space-x-2">
       <Image
         src={beatmap.cover}
         alt=""
@@ -27,13 +33,23 @@ export const BeatmapCard = ({ beatmap }: { beatmap: BeatmapSimple }) => {
         height={720}
         className="w-24 h-fit rounded-xl"
       />
-      <p>
-        {beatmap.artist} -{" "}
-        {beatmap.title.length > 30
-          ? beatmap.title.slice(0, 30) + "..."
-          : beatmap.title}
-      </p>
-      <p>({beatmap.creator})</p>
+      {simple ? (
+        <p>
+          {beatmap.title.length > 30
+            ? beatmap.title.slice(0, 30) + "..."
+            : beatmap.title}
+        </p>
+      ) : (
+        <>
+          <p>
+            {beatmap.artist} -{" "}
+            {beatmap.title.length > 30
+              ? beatmap.title.slice(0, 30) + "..."
+              : beatmap.title}
+          </p>
+          <p>({beatmap.creator})</p>
+        </>
+      )}
     </div>
   );
 };
@@ -97,7 +113,7 @@ export default function MapSearch({
   return (
     <div
       className="absolute flex flex-col place-content-center items-center w-full h-full bg-black/10"
-      onClick={() => setSelectedView("main")}
+      onClick={() => setSelectedView("Default")}
     >
       <div
         className="backdrop-blur-md bg-white/10 rounded-xl flex flex-col place-content-end items-center w-2/3 h-1/2 p-4"
@@ -115,7 +131,7 @@ export default function MapSearch({
                   className="w-full flex flex-row h-12 bg-black/40 hover:bg-black/70 cursor-pointer rounded-xl"
                   key={beatmap.id}
                   onClick={() => {
-                    setSelectedView("main");
+                    setSelectedView("Default");
                     setSelectedBeatmap(beatmap);
                   }}
                 >

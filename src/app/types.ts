@@ -1,11 +1,16 @@
-export type Score = {
-  player_name: string | undefined;
-  player_id: number;
-  beatmap_name: string | undefined;
-  beatmap_id: number;
-  year: number | undefined;
+export type GuessableScore = {
+  id: number;
+  player: PlayerSimple;
+  beatmap: BeatmapSimple;
+  year: number;
   pp: number;
   day: number;
+};
+
+export type HypotheticalScore = {
+  player: PlayerSimple;
+  beatmap: BeatmapSimple;
+  year: number;
 };
 
 export type BeatmapSimple = {
@@ -25,7 +30,7 @@ export type PlayerSimple = {
 
 export type ScoreDraft = {
   attempt: number;
-  score: Score;
+  score: HypotheticalScore;
   isValidPlayer: boolean;
   isValidMap: boolean;
   isValidYear: boolean;

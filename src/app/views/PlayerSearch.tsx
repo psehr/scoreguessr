@@ -10,17 +10,15 @@ import { Loading } from "./MapSearch";
 
 export const PlayerCard = ({ player }: { player: PlayerSimple }) => {
   return (
-    <div className="w-full h-full flex flex-row place-content-start items-center space-x-2">
+    <div className="w-fit h-full flex flex-row place-content-start items-center space-x-2">
       <Image
         src={player.avatar}
         alt=""
         width={32}
         height={32}
-        className="w-8 h-fit rounded-xl"
+        className="w-8 h-fit rounded-md"
       />
-      <p>
-        {player.username} {player.country_code}
-      </p>
+      <p>{player.username}</p>
     </div>
   );
 };
@@ -85,7 +83,7 @@ export default function PlayerSearch({
   return (
     <div
       className="absolute flex flex-col place-content-center items-center w-full h-full backdrop-blur-sm bg-black/10"
-      onClick={() => setSelectedView("main")}
+      onClick={() => setSelectedView("Default")}
     >
       <div
         className="backdrop-blur-md bg-white/10 rounded-xl flex flex-col place-content-end items-center w-2/3 h-1/2 p-4"
@@ -103,7 +101,7 @@ export default function PlayerSearch({
                   className="w-full flex flex-row h-12 bg-black/40 hover:bg-black/70 cursor-pointer rounded-xl"
                   key={player.id}
                   onClick={() => {
-                    setSelectedView("main");
+                    setSelectedView("Default");
                     setSelectedPlayer(player);
                   }}
                 >

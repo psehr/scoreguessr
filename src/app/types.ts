@@ -1,9 +1,9 @@
 export type Score = {
-  player_name: string;
+  player_name: string | undefined;
   player_id: number;
-  beatmap_name: string;
+  beatmap_name: string | undefined;
   beatmap_id: number;
-  year: number;
+  year: number | undefined;
   pp: number;
   day: number;
 };

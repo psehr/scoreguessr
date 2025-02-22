@@ -4,6 +4,19 @@ import { Beatmapset } from "osu-api-extended/dist/types/v2/search_all";
 import Image from "next/image";
 import { lookupMaps } from "../api_fct";
 
+import { TbFidgetSpinner } from "react-icons/tb";
+
+export function Loading() {
+  return (
+    <TbFidgetSpinner
+      size={50}
+      opacity={0.8}
+      className="animate-spin"
+      color="white"
+    />
+  );
+}
+
 export const BeatmapCard = ({ beatmap }: { beatmap: BeatmapSimple }) => {
   return (
     <div className="w-full h-full flex flex-row place-content-start items-center space-x-2">
@@ -12,7 +25,7 @@ export const BeatmapCard = ({ beatmap }: { beatmap: BeatmapSimple }) => {
         alt=""
         width={3840}
         height={720}
-        className="w-32 h-fit rounded-xl"
+        className="w-24 h-fit rounded-xl"
       />
       <p>
         {beatmap.artist} -{" "}
@@ -83,38 +96,31 @@ export default function MapSearch({
 
   return (
     <div
-      className="absolute flex flex-col place-content-center items-center w-full h-full backdrop-blur-sm bg-black/10"
+      className="absolute flex flex-col place-content-center items-center w-full h-full bg-black/10"
       onClick={() => setSelectedView("main")}
     >
       <div
-        className="bg-slate-800 rounded-xl flex flex-col place-content-end items-center w-2/3 h-1/2 p-4"
+        className="backdrop-blur-md bg-white/10 rounded-xl flex flex-col place-content-end items-center w-2/3 h-1/2 p-4"
         onClick={(e) => e.stopPropagation()}
       >
         {isLoading ? (
-          <div className="w-full h-full flex place-content-center items-center">
-            <p>Loading...</p>
+          <div className="w-full h-5/6 flex place-content-center items-center">
+            {<Loading />}
           </div>
         ) : (
           <div className="w-full h-5/6 flex flex-col space-y-2 overflow-auto ">
             {mapSearchResults?.slice(0, 5).map((beatmap) => {
               return (
                 <div
-                  className="w-full flex flex-row h-12 bg-black/40 rounded-xl"
+                  className="w-full flex flex-row h-12 bg-black/40 hover:bg-black/70 cursor-pointer rounded-xl"
                   key={beatmap.id}
+                  onClick={() => {
+                    setSelectedView("main");
+                    setSelectedBeatmap(beatmap);
+                  }}
                 >
-                  <div className="w-2/3 px-2">
+                  <div className="w-full px-2">
                     <BeatmapCard beatmap={beatmap} />
-                  </div>
-                  <div className="w-1/3 flex flex-row place-content-end items-center px-2">
-                    <button
-                      className="px-4 p-1 bg-blue-700 hover:bg-blue-600 rounded-xl"
-                      onClick={(e) => {
-                        setSelectedView("main");
-                        setSelectedBeatmap(beatmap);
-                      }}
-                    >
-                      Select beatmap
-                    </button>
                   </div>
                 </div>
               );

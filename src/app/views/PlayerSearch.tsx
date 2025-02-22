@@ -6,6 +6,7 @@ import {
 } from "osu-api-extended/dist/types/v2/search_all";
 import Image from "next/image";
 import { lookupMaps, lookupPlayers } from "../api_fct";
+import { Loading } from "./MapSearch";
 
 export const PlayerCard = ({ player }: { player: PlayerSimple }) => {
   return (
@@ -87,25 +88,28 @@ export default function PlayerSearch({
       onClick={() => setSelectedView("main")}
     >
       <div
-        className="bg-slate-800 rounded-xl flex flex-col place-content-end items-center w-2/3 h-1/2 p-4"
+        className="backdrop-blur-md bg-white/10 rounded-xl flex flex-col place-content-end items-center w-2/3 h-1/2 p-4"
         onClick={(e) => e.stopPropagation()}
       >
         {isLoading ? (
-          <div className="w-full h-full flex place-content-center items-center">
-            <p>Loading...</p>
+          <div className="w-full h-5/6 flex place-content-center items-center">
+            {<Loading />}
           </div>
         ) : (
           <div className="w-full h-5/6 flex flex-col space-y-2 overflow-auto ">
             {playerSearchResults?.slice(0, 5).map((player) => {
               return (
                 <div
-                  className="w-full flex flex-row h-12 bg-black/40 rounded-xl"
+                  className="w-full flex flex-row h-12 bg-black/40 hover:bg-black/70 cursor-pointer rounded-xl"
                   key={player.id}
+                  onClick={() => {
+                    setSelectedView("main");
+                    setSelectedPlayer(player);
+                  }}
                 >
-                  <div className="w-2/3 px-2">
+                  <div className="w-full px-2">
                     <PlayerCard player={player} />
                   </div>
-                  <div className="w-1/3 flex flex-row place-content-end items-center px-2"></div>
                 </div>
               );
             })}

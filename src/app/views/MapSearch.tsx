@@ -34,14 +34,16 @@ export const BeatmapCard = ({
         className="w-24 h-fit rounded-xl"
       />
       {simple ? (
-        <p>
-          {beatmap.title.length > 30
-            ? beatmap.title.slice(0, 30) + "..."
-            : beatmap.title}
-        </p>
+        <>
+          <p className="flex flex-nowrap overflow-hidden whitespace-nowrap">
+            {beatmap.title.length > 30
+              ? beatmap.title.slice(0, 30) + "..."
+              : beatmap.title}
+          </p>
+        </>
       ) : (
         <>
-          <p>
+          <p className="flex flex-nowrap overflow-hidden whitespace-nowrap">
             {beatmap.artist} -{" "}
             {beatmap.title.length > 30
               ? beatmap.title.slice(0, 30) + "..."
@@ -77,7 +79,7 @@ export default function MapSearch({
     const handler = setTimeout(() => {
       setDebouncedQuery(mapSearchQuery);
       debouncedQuery === mapSearchQuery ? setIsLoading(false) : null;
-    }, 400);
+    }, 300);
 
     return () => {
       setIsLoading(true);
@@ -104,6 +106,7 @@ export default function MapSearch({
           creator: beatmapset.creator,
           id: beatmapset.id,
           cover: beatmapset.covers["cover@2x"],
+          rankYear: new Date(Date.parse(beatmapset.ranked_date)).getFullYear(),
         };
       })
     );
@@ -151,6 +154,7 @@ export default function MapSearch({
             onChange={(e) => {
               setMapSearchQuery(e.target.value);
             }}
+            autoFocus
           />
         </div>
       </div>

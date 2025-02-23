@@ -121,6 +121,7 @@ export default function PlayerSearch({
             onChange={(e) => {
               setPlayerSearchQuery(e.target.value);
             }}
+            autoFocus
           />
         </div>
       </div>

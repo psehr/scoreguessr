@@ -10,7 +10,19 @@ import {
 import MapSearch, { BeatmapCard } from "./views/MapSearch";
 
 import PlayerSearch, { PlayerCard } from "./views/PlayerSearch";
+import {
+  addDays,
+  formatDate,
+  formatDistance,
+  formatISO,
+  subDays,
+} from "date-fns";
 
+import * as Flags from "country-flag-icons/react/3x2";
+
+import { LuArrowUp, LuArrowDown, LuCheck } from "react-icons/lu";
+
+const NEXT_DAY_TIMESTAMP = addDays(new Date(), 1).setHours(1, 0, 0);
 const CORRECT_SCORE: GuessableScore = {
   id: 453746931,
   player: {
@@ -25,6 +37,7 @@ const CORRECT_SCORE: GuessableScore = {
     creator: "Asphyxia",
     id: 292301,
     cover: "https://assets.ppy.sh/beatmaps/292301/covers/cover.jpg",
+    rankYear: 2015,
   },
   year: 2016,
   pp: 727,
@@ -33,7 +46,7 @@ const CORRECT_SCORE: GuessableScore = {
 
 export default function Home() {
   const [currentView, setCurrentView] = useState<
-    "Default" | "MapSearch" | "PlayerSearch"
+    "Default" | "MapSearch" | "PlayerSearch" | "WinScreen"
   >("Default");
 
   const [scoreDrafts, setScoreDrafts] = useState<ScoreDraft[]>();
@@ -52,32 +65,66 @@ export default function Home() {
 
   const renderRows = () => {
     if (!scoreDrafts?.length) return;
+
     return scoreDrafts.map((scoreDraft) => {
+      let Flag =
+        Flags[
+          scoreDraft.score.player.country_code.toUpperCase() as keyof typeof Flags
+        ];
       return (
         <tr className="" key={scoreDraft.attempt}>
-          <td key={`player_name-${scoreDraft.attempt}`}>
+          <td className="w-1/5" key={`player_name-${scoreDraft.attempt}`}>
             <div className="w-full flex flex-row place-content-center items-center">
               <div
                 className={`w-full flex flex-row place-content-center items-center text-2xl p-2 rounded-xl ${
-                  scoreDraft.isValidPlayer ? "bg-green-600" : "bg-red-600"
+                  scoreDraft.isValidPlayer
+                    ? "bg-green-600"
+                    : scoreDraft.isValidCountry
+                    ? "bg-yellow-600"
+                    : "bg-red-600"
                 }`}
               >
-                <PlayerCard player={scoreDraft.score.player} />
+                <div className="w-2/3 flex flex-row place-content-start items-center space-x-2">
+                  <PlayerCard player={scoreDraft.score.player} />
+                </div>
+                <div className="w-1/3 flex flex-row place-content-end items-center space-x-2">
+                  <div className="rounded-md overflow-hidden w-12 h-fit">
+                    <Flag />
+                  </div>
+                </div>
               </div>
             </div>
           </td>
-          <td key={`beatmap_name-${scoreDraft.attempt}`}>
+          <td className="w-2/5" key={`beatmap_name-${scoreDraft.attempt}`}>
             <div className="w-full flex flex-row place-content-center items-center">
               <div
-                className={`shadow-lg w-full flex flex-row place-content-center items-center text-2xl p-2 rounded-xl ${
-                  scoreDraft.isValidMap ? "bg-green-600" : "bg-red-600"
+                className={`shadow-lg w-full flex flex-row place-content-center items-center text-2xl p-2 rounded-xl space-x-2 ${
+                  scoreDraft.isValidMap
+                    ? "bg-green-600"
+                    : scoreDraft.isValidRankedYear
+                    ? "bg-yellow-600"
+                    : "bg-red-600"
                 }`}
               >
-                <BeatmapCard beatmap={scoreDraft.score.beatmap} simple />
+                <div className="w-2/3 flex flex-row place-content-start items-center space-x-2">
+                  <BeatmapCard beatmap={scoreDraft.score.beatmap} simple />
+                </div>
+                <div className="w-1/3 flex flex-row place-content-end items-center">
+                  <p className={`text-lg px-2 rounded-xl`}>
+                    Ranked in {scoreDraft.score.beatmap.rankYear}
+                  </p>
+                  {scoreDraft.score.beatmap.rankYear <
+                  CORRECT_SCORE.beatmap.rankYear ? (
+                    <LuArrowUp />
+                  ) : CORRECT_SCORE.beatmap.rankYear ==
+                    scoreDraft.score.beatmap.rankYear ? null : (
+                    <LuArrowDown />
+                  )}
+                </div>
               </div>
             </div>
           </td>
-          <td key={`year-${scoreDraft.attempt}`}>
+          <td className="w-1/5" key={`year-${scoreDraft.attempt}`}>
             <div className="w-full flex flex-row place-content-center items-center">
               <div
                 className={`w-full flex flex-row place-content-center items-center text-2xl p-2 rounded-xl ${
@@ -85,6 +132,11 @@ export default function Home() {
                 }`}
               >
                 {scoreDraft.score.year || "Year?"}
+                {scoreDraft.score.year < CORRECT_SCORE.year ? (
+                  <LuArrowUp />
+                ) : CORRECT_SCORE.year == scoreDraft.score.year ? null : (
+                  <LuArrowDown />
+                )}
               </div>
             </div>
           </td>
@@ -104,8 +156,8 @@ export default function Home() {
           </p>
         </div>
       </div>
-      <div className="w-full min-h-fit h-1/2 p-4 px-8 bg-gray-950/90 shadow-lg text-center place-content-center items-center overflow-auto">
-        <table className="table-fixed w-full h-fit font-bold overflow-hidden">
+      <div className="w-full min-h-fit h-1/2 p-4 px-8 bg-gray-950/90 shadow-lg text-center flex flex-row place-content-center overflow-auto">
+        <table className="table-fixed w-3/4 h-fit font-bold overflow-hidden">
           <tbody className="text-4xl h-fit w-full">{renderRows()}</tbody>
         </table>
       </div>
@@ -189,6 +241,11 @@ export default function Home() {
                 isValidMap: selectedBeatmap.id === CORRECT_SCORE.beatmap.id,
                 isValidYear: selectedYear === CORRECT_SCORE.year,
                 isValidPP: true,
+                isValidCountry:
+                  selectedPlayer.country_code ===
+                  CORRECT_SCORE.player.country_code,
+                isValidRankedYear:
+                  selectedBeatmap.rankYear === CORRECT_SCORE.beatmap.rankYear,
                 attempt: scoreDrafts ? scoreDrafts.length + 1 : 1,
               };
               setScoreDrafts(
@@ -201,7 +258,11 @@ export default function Home() {
         </div>
       </div>
       <div className="absolute bottom-2 text-gray-400">
-        Next score in 12 hours (01:00 UTC) - Made by @psehr
+        Day {CORRECT_SCORE.day} - Next score{" "}
+        {formatDistance(NEXT_DAY_TIMESTAMP, new Date(), {
+          addSuffix: true,
+        })}{" "}
+        - Made by @psehr
       </div>
       {currentView === "MapSearch" ? (
         <MapSearch

@@ -19,6 +19,7 @@ export type BeatmapSimple = {
   creator: string;
   id: number;
   cover: string;
+  rankYear: number;
 };
 
 export type PlayerSimple = {
@@ -35,4 +36,6 @@ export type ScoreDraft = {
   isValidMap: boolean;
   isValidYear: boolean;
   isValidPP: boolean;
+  isValidCountry: boolean;
+  isValidRankedYear: boolean;
 };

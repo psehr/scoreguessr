@@ -6,6 +6,7 @@ import {
   SearchBeatmaps,
   SearchWiki,
 } from "osu-api-extended/dist/types/v2/search_all";
+import { scores_details_response } from "osu-api-extended/dist/types/v2/scores_details";
 
 export const lookupMaps = async (search_querry: string) => {
   return new Promise<SearchBeatmaps>(async (resolve) => {
@@ -26,5 +27,15 @@ export const lookupPlayers = async (search_querry: string) => {
       type: "site",
     });
     resolve(players);
+  });
+};
+
+export const lookupScore = async (score_id: number) => {
+  return new Promise<scores_details_response>(async (resolve) => {
+    await osuAuth();
+    const score = await v2.scores.details({
+      id: score_id,
+    });
+    resolve(score);
   });
 };

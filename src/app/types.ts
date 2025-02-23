@@ -4,7 +4,8 @@ export type GuessableScore = {
   beatmap: BeatmapSimple;
   year: number;
   pp: number;
-  day: number;
+  yt_link: string;
+  day_index: number; // number of days since the start of the project, used to find the latest score to guess
 };
 
 export type HypotheticalScore = {

@@ -41,7 +41,8 @@ const CORRECT_SCORE: GuessableScore = {
   },
   year: 2016,
   pp: 727,
-  day: 0,
+  yt_link: "https://www.youtube.com/watch?v=UYNpkDrCWtA",
+  day_index: 0,
 };
 
 export default function Home() {
@@ -258,7 +259,7 @@ export default function Home() {
         </div>
       </div>
       <div className="absolute bottom-2 text-gray-400">
-        Day {CORRECT_SCORE.day} - Next score{" "}
+        Day {CORRECT_SCORE.day_index} - Next score{" "}
         {formatDistance(NEXT_DAY_TIMESTAMP, new Date(), {
           addSuffix: true,
         })}{" "}

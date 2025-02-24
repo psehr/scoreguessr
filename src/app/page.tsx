@@ -21,30 +21,10 @@ import {
 import * as Flags from "country-flag-icons/react/3x2";
 
 import { LuArrowUp, LuArrowDown, LuCheck } from "react-icons/lu";
-import { fetchCurrentScore } from "./_services/firebase/scores";
-
-const NEXT_DAY_TIMESTAMP = addDays(new Date(), 1).setHours(1, 0, 0);
-// const todayScore?: GuessableScore = {
-//   id: 453746931,
-//   player: {
-//     username: "Cookiezi",
-//     id: 124493,
-//     avatar: "https://a.ppy.sh/124493?1546218894.jpg",
-//     country_code: "KR",
-//   },
-//   beatmap: {
-//     artist: "xi",
-//     title: "Blue Zenith",
-//     creator: "Asphyxia",
-//     id: 292301,
-//     cover: "https://assets.ppy.sh/beatmaps/292301/covers/cover.jpg",
-//     rankYear: 2015,
-//   },
-//   year: 2016,
-//   pp: 727,
-//   yt_link: "https://www.youtube.com/watch?v=UYNpkDrCWtA",
-//   day_index: 0,
-// };
+import {
+  fetchCurrentScore,
+  fetchNextScoreTimestamp,
+} from "./_services/firebase/scores";
 
 export default function Home() {
   const [currentView, setCurrentView] = useState<
@@ -52,11 +32,15 @@ export default function Home() {
   >("Default");
 
   const [todayScore, setTodayScore] = useState<GuessableScore>();
+  const [nextScoreTimestamp, setNextScoreTimestamp] = useState<number>();
   useEffect(() => {
     setCurrentView("Loading");
     fetchCurrentScore().then((score) => {
       setTodayScore(score);
       setCurrentView("Default");
+      fetchNextScoreTimestamp().then((timestamp) =>
+        setNextScoreTimestamp(timestamp)
+      );
     });
   }, []);
 
@@ -278,7 +262,7 @@ export default function Home() {
         </div>
         <div className="absolute bottom-2 text-gray-400">
           Day {todayScore?.day_index} - Next score{" "}
-          {formatDistance(NEXT_DAY_TIMESTAMP, new Date(), {
+          {formatDistance(nextScoreTimestamp ?? 0, new Date(), {
             addSuffix: true,
           })}{" "}
           - Made by @psehr

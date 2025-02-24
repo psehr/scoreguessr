@@ -64,3 +64,17 @@ export async function fetchCurrentScore() {
       .catch((e) => reject("could not fetch current score"));
   });
 }
+
+export async function fetchNextScoreTimestamp() {
+  return new Promise<number>(async (resolve, reject) => {
+    const start_time =
+      (await db.collection("static").doc("start_time").get()).data()
+        ?.timestamp || Date.now();
+
+    const time_diff = Date.now() - start_time;
+    const day_time_diff = Math.floor(time_diff / 86400000);
+
+    const next_day_time = start_time + (day_time_diff + 1) * 86400000;
+    resolve(next_day_time);
+  });
+}

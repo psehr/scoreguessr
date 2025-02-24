@@ -17,6 +17,7 @@ export default function AdminPanel() {
   const [pp, setPP] = useState<number | null>(null);
   const [newGuessableScore, setNewGuessableScore] = useState<GuessableScore>();
   const [currentDayIndex, setCurrentDayIndex] = useState<number>();
+  const [forcedRefresh, setForcedRefresh] = useState(true);
 
   useEffect(() => {
     console.log(newGuessableScore);
@@ -28,6 +29,12 @@ export default function AdminPanel() {
     fetchAllScores().then((scores) => setAllScores(scores));
     fetchCurrentScore().then((score) => setCurrentDayIndex(score.day_index));
   }, []);
+
+  useEffect(() => {
+    setNewGuessableScore(undefined);
+    fetchAllScores().then((scores) => setAllScores(scores));
+    fetchCurrentScore().then((score) => setCurrentDayIndex(score.day_index));
+  }, [forcedRefresh]);
 
   const renderScores = () => {
     if (allScores.length) {
@@ -148,7 +155,10 @@ export default function AdminPanel() {
         <button
           className="w-64 h-fit"
           onClick={() => {
-            newGuessableScore ? addNewScore(newGuessableScore) : null;
+            if (newGuessableScore) {
+              addNewScore(newGuessableScore);
+              window.location.reload();
+            } else alert("an error occurred");
           }}
         >
           Submit

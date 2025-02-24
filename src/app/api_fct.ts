@@ -16,6 +16,7 @@ export const lookupMaps = async (search_querry: string) => {
     const maps = await v2.search({
       query: search_querry,
       type: "beatmaps",
+      _nsfw: true,
     });
     resolve(maps);
   });

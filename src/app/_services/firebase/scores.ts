@@ -15,7 +15,7 @@ export async function fetchAllScores() {
           scores.push(d as GuessableScore);
         });
 
-        resolve(scores);
+        resolve(scores.sort((a, b) => a.day_index - b.day_index));
       })
       .catch((e) => reject("could not fetch all scores"));
   });

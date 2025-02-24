@@ -115,11 +115,11 @@ export default function MapSearch({
 
   return (
     <div
-      className="absolute flex flex-col place-content-center items-center w-full h-full bg-black/10"
+      className="absolute flex flex-col place-content-center items-center w-full h-full bg-black/30"
       onClick={() => setSelectedView("Default")}
     >
       <div
-        className="backdrop-blur-md bg-white/10 rounded-xl flex flex-col place-content-end items-center w-2/3 h-1/2 p-4"
+        className="backdrop-blur-md bg-white/10 rounded-xl flex flex-col place-content-end items-center w-1/3 h-fit min-h-[40%] p-4 space-y-4"
         onClick={(e) => e.stopPropagation()}
       >
         {isLoading ? (

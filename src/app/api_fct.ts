@@ -7,6 +7,8 @@ import {
   SearchWiki,
 } from "osu-api-extended/dist/types/v2/search_all";
 import { scores_details_response } from "osu-api-extended/dist/types/v2/scores_details";
+import { beatmaps_lookup_set_response } from "osu-api-extended/dist/types/v2/beatmaps_lookup_set";
+import { beatmaps_details_set_response } from "osu-api-extended/dist/types/v2/beatmaps_details_set";
 
 export const lookupMaps = async (search_querry: string) => {
   return new Promise<SearchBeatmaps>(async (resolve) => {
@@ -37,5 +39,13 @@ export const lookupScore = async (score_id: number) => {
       id: score_id,
     });
     resolve(score);
+  });
+};
+
+export const lookupMap = async (map_id: number) => {
+  return new Promise<beatmaps_details_set_response>(async (resolve) => {
+    await osuAuth();
+    const map = await v2.beatmaps.details({ id: map_id, type: "set" });
+    resolve(map);
   });
 };

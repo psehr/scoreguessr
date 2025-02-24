@@ -2,23 +2,71 @@
 
 import { useEffect, useState } from "react";
 import { BeatmapSimple, GuessableScore, PlayerSimple } from "../types";
-import { lookupScore } from "../api_fct";
-import { BeatmapCard } from "../views/MapSearch";
+import { lookupMap, lookupScore } from "../api_fct";
+import { BeatmapCard, Loading } from "../views/MapSearch";
 import { PlayerCard } from "../views/PlayerSearch";
+import {
+  addNewScore,
+  fetchAllScores,
+  fetchCurrentScore,
+} from "../_services/firebase/scores";
 
 export default function AdminPanel() {
   const [scoreID, setScoreID] = useState<number | null>(null);
   const [ytLink, setYtLink] = useState<string | null>(null);
   const [pp, setPP] = useState<number | null>(null);
   const [newGuessableScore, setNewGuessableScore] = useState<GuessableScore>();
+  const [currentDayIndex, setCurrentDayIndex] = useState<number>();
 
   useEffect(() => {
     console.log(newGuessableScore);
   }, [newGuessableScore]);
 
+  const [allScores, setAllScores] = useState<GuessableScore[]>([]);
+
+  useEffect(() => {
+    fetchAllScores().then((scores) => setAllScores(scores));
+    fetchCurrentScore().then((score) => setCurrentDayIndex(score.day_index));
+  }, []);
+
+  const renderScores = () => {
+    if (allScores.length) {
+      return allScores.map((score) => {
+        return (
+          <div
+            key={score.day_index}
+            className={`relative w-full flex flex-row space-x-4 p-2 items-center ${
+              score.day_index == currentDayIndex
+                ? "bg-green-600/30"
+                : "bg-black/30"
+            }`}
+          >
+            <BeatmapCard beatmap={score.beatmap} />
+            <PlayerCard player={score.player} />
+            <p>
+              {score.pp}pp in {score.year}
+            </p>
+            <a href={score.yt_link} className="underline">
+              YouTube link
+            </a>
+            <a
+              href={`https://osu.ppy.sh/scores/${score.id}`}
+              className="underline"
+            >
+              Score link
+            </a>
+            <div className="absolute right-0 px-4 text-2xl font-bold w-fit h-fit">
+              <p>Day {score.day_index}</p>
+            </div>
+          </div>
+        );
+      });
+    }
+  };
+
   return (
     <div className="flex flex-row w-full h-full">
-      <div className="w-1/2 h-full bg-black/15 flex flex-col place-content-center items-center p-4 space-y-4">
+      <div className="w-1/3 h-full bg-black/15 flex flex-col place-content-center items-center p-4 space-y-4">
         <input
           type="number"
           className="h-fit w-64 p-1"
@@ -41,14 +89,18 @@ export default function AdminPanel() {
           className="h-fit w-64"
           onClick={() => {
             if (scoreID) {
-              lookupScore(scoreID).then((score) => {
+              lookupScore(scoreID).then(async (score) => {
+                const ranked_year = new Date(
+                  Date.parse((await lookupMap(score.beatmapset.id)).ranked_date)
+                ).getFullYear();
+
                 const beatmap: BeatmapSimple = {
                   artist: score.beatmapset.artist,
                   title: score.beatmapset.title,
                   creator: score.beatmapset.creator,
                   id: score.beatmapset.id,
                   cover: score.beatmapset.covers.cover,
-                  rankYear: 0,
+                  rankYear: ranked_year,
                 };
 
                 const player: PlayerSimple = {
@@ -96,20 +148,14 @@ export default function AdminPanel() {
         <button
           className="w-64 h-fit"
           onClick={() => {
-            console.log(
-              `"https://www.youtube.com/embed/${
-                newGuessableScore?.yt_link.split("=")[1]
-              }?origin=http://example.com"`
-            );
+            newGuessableScore ? addNewScore(newGuessableScore) : null;
           }}
         >
           Submit
         </button>
       </div>
-      <div className="w-1/2 h-full flex flex-row place-content-center items-center">
-        <p className="text-6xl text-gray-600 font-extrabold">
-          Days list goes here
-        </p>
+      <div className="w-2/3 h-full flex flex-col place-content-center items-center">
+        {allScores.length ? renderScores() : <Loading />}
       </div>
     </div>
   );

@@ -7,8 +7,12 @@ textarea {
   @apply w-full h-full rounded-xl text-center bg-black/40;
 }
 
-button {
+/* button {
   @apply shadow-lg w-full h-full bg-gray-950/50 hover:bg-gray-950/80 transition-all font-semibold text-blue-100 rounded-xl px-4 py-2 border border-blue-400;
+} */
+
+button {
+  @apply shadow-lg w-full h-full bg-blue-600/10 hover:bg-gray-950/80 transition-all font-semibold text-blue-100 rounded-xl px-4 py-2 border border-blue-600;
 }
 
 input#ignore-placeholder::placeholder {

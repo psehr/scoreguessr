@@ -25,6 +25,7 @@ import {
   fetchCurrentScore,
   fetchNextScoreTimestamp,
 } from "./_services/firebase/scores";
+import WinScreen from "./views/WinScreen";
 
 export default function Home() {
   const [currentView, setCurrentView] = useState<
@@ -50,12 +51,19 @@ export default function Home() {
   const [selectedPlayer, setSelectedPlayer] = useState<PlayerSimple>();
   const [selectedYear, setSelectedYear] = useState<number>();
 
+  const [foundScore, setFoundScore] = useState(false);
+
   useEffect(() => {
     if (!scoreDrafts?.length) return;
     const lastDraft = scoreDrafts[scoreDrafts.length - 1];
-    lastDraft.isValidMap && lastDraft.isValidPlayer && lastDraft.isValidYear
-      ? console.log("GG")
-      : null;
+    if (
+      lastDraft.isValidMap &&
+      lastDraft.isValidPlayer &&
+      lastDraft.isValidYear
+    ) {
+      setCurrentView("WinScreen");
+      setFoundScore(true);
+    }
   }, [scoreDrafts]);
 
   const renderRows = () => {
@@ -161,105 +169,109 @@ export default function Home() {
             <tbody className="text-4xl h-fit w-full">{renderRows()}</tbody>
           </table>
         </div>
-        <div className="bg-gray-950/80 w-full h-1/4 p-8 flex flex-col space-y-4 text-center items-center">
-          <div className="w-2/3 h-12 flex flex-row space-x-4 place-content-center items-center">
-            <div className="w-1/4 h-12">
-              <div className="relative w-full h-full">
-                {selectedPlayer ? (
-                  <button
-                    className="flex place-content-center items-center"
-                    onClick={(e) => {
-                      e.preventDefault();
-                      setCurrentView("PlayerSearch");
-                    }}
-                  >
-                    <PlayerCard player={selectedPlayer} />
-                  </button>
-                ) : (
-                  <button
-                    className=""
-                    onClick={(e) => {
-                      e.preventDefault();
-                      setCurrentView("PlayerSearch");
-                    }}
-                  >
-                    Select player
-                  </button>
-                )}
+        {!foundScore ? (
+          <div className="bg-gray-950/80 w-full h-1/4 p-8 flex flex-col space-y-4 text-center items-center">
+            <div className="w-2/3 h-12 flex flex-row space-x-4 place-content-center items-center">
+              <div className="w-1/4 h-12">
+                <div className="relative w-full h-full">
+                  {selectedPlayer ? (
+                    <button
+                      className="flex place-content-center items-center"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        setCurrentView("PlayerSearch");
+                      }}
+                    >
+                      <PlayerCard player={selectedPlayer} />
+                    </button>
+                  ) : (
+                    <button
+                      className=""
+                      onClick={(e) => {
+                        e.preventDefault();
+                        setCurrentView("PlayerSearch");
+                      }}
+                    >
+                      Select player
+                    </button>
+                  )}
+                </div>
+              </div>
+              <div className="w-1/2 h-12">
+                <div className="relative w-full h-full">
+                  {selectedBeatmap ? (
+                    <button
+                      className="flex place-content-center items-center"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        setCurrentView("MapSearch");
+                      }}
+                    >
+                      <BeatmapCard beatmap={selectedBeatmap} />
+                    </button>
+                  ) : (
+                    <button
+                      className=""
+                      onClick={(e) => {
+                        e.preventDefault();
+                        setCurrentView("MapSearch");
+                      }}
+                    >
+                      Select beatmap
+                    </button>
+                  )}
+                </div>
+              </div>
+              <div className="w-1/4 h-12">
+                <input
+                  id="ignore-placeholder"
+                  placeholder="Select year"
+                  className="border border-blue-600 bg-blue-600/10 font-semibold"
+                  type="number"
+                  onChange={(e) => {
+                    setSelectedYear(parseInt(e.target.value));
+                  }}
+                ></input>
               </div>
             </div>
-            <div className="w-1/2 h-12">
-              <div className="relative w-full h-full">
-                {selectedBeatmap ? (
-                  <button
-                    className="flex place-content-center items-center"
-                    onClick={(e) => {
-                      e.preventDefault();
-                      setCurrentView("MapSearch");
-                    }}
-                  >
-                    <BeatmapCard beatmap={selectedBeatmap} />
-                  </button>
-                ) : (
-                  <button
-                    className=""
-                    onClick={(e) => {
-                      e.preventDefault();
-                      setCurrentView("MapSearch");
-                    }}
-                  >
-                    Select beatmap
-                  </button>
-                )}
-              </div>
-            </div>
-            <div className="w-1/4 h-12">
-              <input
-                id="ignore-placeholder"
-                placeholder="Select year"
-                className="border border-blue-600 bg-blue-600/10 font-semibold"
-                type="number"
-                onChange={(e) => {
-                  setSelectedYear(parseInt(e.target.value));
+            <div className="w-2/3 h-12 flex flex-row place-content-center items-center">
+              <button
+                type="submit"
+                className=" border-green-400 bg-green-600/10"
+                onClick={() => {
+                  if (!selectedPlayer || !selectedBeatmap || !selectedYear)
+                    return;
+                  const newScoreDraft: ScoreDraft = {
+                    score: {
+                      player: selectedPlayer,
+                      beatmap: selectedBeatmap,
+                      year: selectedYear,
+                    },
+                    isValidPlayer: selectedPlayer.id === todayScore?.player.id,
+                    isValidMap: selectedBeatmap.id === todayScore?.beatmap.id,
+                    isValidYear: selectedYear === todayScore?.year,
+                    isValidPP: true,
+                    isValidCountry:
+                      selectedPlayer.country_code ===
+                      todayScore?.player.country_code,
+                    isValidRankedYear:
+                      selectedBeatmap.rankYear === todayScore?.beatmap.rankYear,
+                    attempt: scoreDrafts ? scoreDrafts.length + 1 : 1,
+                  };
+                  setScoreDrafts(
+                    scoreDrafts
+                      ? [...scoreDrafts, newScoreDraft]
+                      : [newScoreDraft]
+                  );
                 }}
-              ></input>
+              >
+                Submit
+              </button>
             </div>
           </div>
-          <div className="w-2/3 h-12 flex flex-row place-content-center items-center">
-            <button
-              type="submit"
-              className=" border-green-400 bg-green-600/10"
-              onClick={() => {
-                if (!selectedPlayer || !selectedBeatmap || !selectedYear)
-                  return;
-                const newScoreDraft: ScoreDraft = {
-                  score: {
-                    player: selectedPlayer,
-                    beatmap: selectedBeatmap,
-                    year: selectedYear,
-                  },
-                  isValidPlayer: selectedPlayer.id === todayScore?.player.id,
-                  isValidMap: selectedBeatmap.id === todayScore?.beatmap.id,
-                  isValidYear: selectedYear === todayScore?.year,
-                  isValidPP: true,
-                  isValidCountry:
-                    selectedPlayer.country_code ===
-                    todayScore?.player.country_code,
-                  isValidRankedYear:
-                    selectedBeatmap.rankYear === todayScore?.beatmap.rankYear,
-                  attempt: scoreDrafts ? scoreDrafts.length + 1 : 1,
-                };
-                setScoreDrafts(
-                  scoreDrafts
-                    ? [...scoreDrafts, newScoreDraft]
-                    : [newScoreDraft]
-                );
-              }}
-            >
-              Submit
-            </button>
-          </div>
-        </div>
+        ) : (
+          <div className="bg-gray-950/80 w-full h-1/4 p-8 flex flex-col space-y-4 text-center items-center"></div>
+        )}
         <div className="absolute bottom-2 text-gray-400">
           Day {todayScore?.day_index} - Next score{" "}
           {formatDistance(nextScoreTimestamp ?? 0, new Date(), {
@@ -279,6 +291,13 @@ export default function Home() {
             selectedPlayer={selectedPlayer}
             setSelectedPlayer={setSelectedPlayer}
             setSelectedView={setCurrentView}
+          />
+        ) : null}
+        {currentView === "WinScreen" ? (
+          <WinScreen
+            setSelectedView={setCurrentView}
+            validScore={todayScore}
+            everyDrafts={scoreDrafts!}
           />
         ) : null}
       </div>

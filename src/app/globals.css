@@ -12,7 +12,7 @@ textarea {
 } */
 
 button {
-  @apply shadow-lg w-full h-full bg-blue-600/10 hover:bg-gray-950/80 transition-all font-semibold text-blue-100 rounded-xl px-4 py-2 border border-blue-600;
+  @apply shadow-lg w-full h-full bg-blue-600/10 hover:bg-gray-950/80 transition-all font-semibold text-blue-100 rounded-xl px-1 md:px-4 py-1 md:py-2 border border-blue-600;
 }
 
 input#ignore-placeholder::placeholder {

@@ -10,13 +10,13 @@ import { Loading } from "./MapSearch";
 
 export const PlayerCard = ({ player }: { player: PlayerSimple }) => {
   return (
-    <div className="w-fit h-full flex flex-row place-content-start items-center space-x-2">
+    <div className="w-fit h-full flex flex-row place-content-start items-center md:space-x-2">
       <Image
         src={player.avatar}
         alt=""
         width={32}
         height={32}
-        className="w-8 h-fit rounded-md"
+        className="hidden md:flex w-4 md:w-8 h-fit rounded-md"
       />
       <p>{player.username}</p>
     </div>
@@ -82,11 +82,11 @@ export default function PlayerSearch({
 
   return (
     <div
-      className="absolute flex flex-col place-content-center items-center w-full h-full bg-black/30"
+      className="absolute flex flex-col place-content-center items-center w-full h-full bg-black/30 backdrop-blur-sm p-4"
       onClick={() => setSelectedView("Default")}
     >
       <div
-        className="backdrop-blur-md bg-white/10 rounded-xl flex flex-col place-content-end items-center w-1/3 h-fit min-h-[40%] p-4 space-y-4"
+        className="backdrop-blur-md bg-white/10 rounded-xl flex flex-col place-content-end items-center w-full md:w-1/3 h-fit min-h-[60%] md:min-h-[40%] p-4 space-y-4"
         onClick={(e) => e.stopPropagation()}
       >
         {isLoading ? (
@@ -116,7 +116,7 @@ export default function PlayerSearch({
         )}
         <div className="w-full h-1/6 flex flex-row place-content-center items-center">
           <input
-            className="w-1/2 h-12"
+            className="w-full md:w-1/2 h-12"
             placeholder="Search for a player"
             type="text"
             onChange={(e) => {

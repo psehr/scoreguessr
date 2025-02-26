@@ -11,11 +11,11 @@ export default function WinScreen({
 }) {
   return (
     <div
-      className="absolute flex flex-col place-content-center items-center w-full h-full bg-black/30"
+      className="absolute flex flex-col place-content-center items-center w-full h-full bg-black/30 backdrop-blur-sm p-1"
       onClick={() => setSelectedView("Default")}
     >
       <div
-        className="backdrop-blur-md bg-white/10 rounded-xl flex flex-col place-content-start items-center w-1/3 h-fit min-h-[40%] p-4 space-y-4"
+        className="backdrop-blur-md bg-white/10 rounded-xl flex flex-col place-content-start items-center w-full md:w-1/3 h-fit min-h-[40%] p-4 space-y-4"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex flex-col place-content-center items-center w-full h-1/4">

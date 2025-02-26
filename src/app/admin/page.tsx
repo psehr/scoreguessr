@@ -156,8 +156,9 @@ export default function AdminPanel() {
           className="w-64 h-fit"
           onClick={() => {
             if (newGuessableScore) {
-              addNewScore(newGuessableScore);
-              window.location.reload();
+              addNewScore(newGuessableScore).then(() => {
+                window.location.reload();
+              });
             } else alert("an error occurred");
           }}
         >

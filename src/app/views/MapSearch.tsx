@@ -31,25 +31,27 @@ export const BeatmapCard = ({
         alt=""
         width={3840}
         height={720}
-        className="w-24 h-fit rounded-xl"
+        className="w-24 h-fit rounded-xl hidden md:flex"
       />
       {simple ? (
         <>
           <p className="flex flex-nowrap overflow-hidden whitespace-nowrap">
-            {beatmap.title.length > 30
-              ? beatmap.title.slice(0, 30) + "..."
+            {beatmap.title.length > 25
+              ? beatmap.title.slice(0, 25) + "..."
               : beatmap.title}
           </p>
         </>
       ) : (
         <>
-          <p className="flex flex-nowrap overflow-hidden whitespace-nowrap">
-            {beatmap.artist} -{" "}
-            {beatmap.title.length > 30
-              ? beatmap.title.slice(0, 30) + "..."
-              : beatmap.title}
-          </p>
-          <p>({beatmap.creator})</p>
+          <div className="flex flex-row flex-nowrap overflow-hidden whitespace-nowrap w-full text-sm md:text-base space-x-2">
+            <p className="hidden md:flex">{beatmap.artist} - </p>
+            <p className="flex">
+              {beatmap.title.length > 25
+                ? beatmap.title.slice(0, 25) + "..."
+                : beatmap.title}
+            </p>
+            <p className="">({beatmap.creator})</p>
+          </div>
         </>
       )}
     </div>
@@ -115,11 +117,11 @@ export default function MapSearch({
 
   return (
     <div
-      className="absolute flex flex-col place-content-center items-center w-full h-full bg-black/30"
+      className="absolute flex flex-col place-content-center items-center w-full h-full bg-black/30 backdrop-blur-sm p-4"
       onClick={() => setSelectedView("Default")}
     >
       <div
-        className="backdrop-blur-md bg-white/10 rounded-xl flex flex-col place-content-end items-center w-1/3 h-fit min-h-[40%] p-4 space-y-4"
+        className="backdrop-blur-md bg-white/10 rounded-xl flex flex-col place-content-end items-center w-full md:w-1/3 h-fit min-h-[60%] md:min-h-[40%] p-4 space-y-4"
         onClick={(e) => e.stopPropagation()}
       >
         {isLoading ? (
@@ -148,7 +150,7 @@ export default function MapSearch({
         )}
         <div className="w-full h-1/6 flex flex-row place-content-center items-center">
           <input
-            className="w-1/2 h-12"
+            className="w-full md:w-1/2 h-12"
             placeholder="Search for a beatmap"
             type="text"
             onChange={(e) => {

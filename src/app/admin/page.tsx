@@ -1,7 +1,13 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { BeatmapSimple, GuessableScore, PlayerSimple } from "../types";
+import {
+  BeatmapSimple,
+  GuessableScore,
+  mod,
+  PlayerSimple,
+  skillsetTag,
+} from "../types";
 import { lookupMap, lookupScore } from "../api_fct";
 import { BeatmapCard, Loading } from "../views/MapSearch";
 import { PlayerCard } from "../views/PlayerSearch";
@@ -18,6 +24,13 @@ export default function AdminPanel() {
   const [newGuessableScore, setNewGuessableScore] = useState<GuessableScore>();
   const [currentDayIndex, setCurrentDayIndex] = useState<number>();
   const [forcedRefresh, setForcedRefresh] = useState(true);
+
+  const [selectedTags, setSelectedTags] = useState<string[]>([]);
+  const [selectedMods, setSelectedMods] = useState<string[]>([]);
+
+  useEffect(() => {
+    console.log(selectedMods, selectedTags);
+  }, [selectedMods, selectedTags]);
 
   useEffect(() => {
     console.log(newGuessableScore);
@@ -71,6 +84,52 @@ export default function AdminPanel() {
     }
   };
 
+  const renderTagsCheckboxes = () => {
+    return skillsetTag.map((tag) => {
+      return (
+        <div
+          className="w-full h-4 flex flex-row space-x-2 place-content-start items-center text-sm"
+          key={tag}
+        >
+          <input
+            type="checkbox"
+            className="w-4"
+            id={tag}
+            onChange={(e) => {
+              e.target.checked
+                ? setSelectedTags([...selectedTags, tag])
+                : setSelectedTags(selectedTags.filter((value) => value != tag));
+            }}
+          />
+          <label>{tag}</label>
+        </div>
+      );
+    });
+  };
+
+  const renderModsCheckboxes = () => {
+    return mod.map((mod) => {
+      return (
+        <div
+          className="w-full h-4 flex flex-row space-x-2 place-content-start items-center"
+          key={mod}
+        >
+          <input
+            type="checkbox"
+            className="w-4"
+            id={mod}
+            onChange={(e) => {
+              e.target.checked
+                ? setSelectedMods([...selectedMods, mod])
+                : setSelectedMods(selectedMods.filter((value) => value != mod));
+            }}
+          />
+          <label>{mod}</label>
+        </div>
+      );
+    });
+  };
+
   return (
     <div className="flex flex-row w-full h-full">
       <div className="w-1/3 h-full bg-black/15 flex flex-col place-content-center items-center p-4 space-y-4">
@@ -92,6 +151,10 @@ export default function AdminPanel() {
           placeholder="Enter youtube url here.."
           onChange={(e) => setYtLink(e.target.value)}
         />
+        <div className="w-full flex flex-row place-content-center items-start space-x-2">
+          <div>{renderTagsCheckboxes()}</div>
+          <div>{renderModsCheckboxes()}</div>
+        </div>
         <button
           className="h-fit w-64"
           onClick={() => {
@@ -124,6 +187,8 @@ export default function AdminPanel() {
                   day_index: 0,
                   pp: pp || 0,
                   yt_link: ytLink || "",
+                  mods: selectedMods,
+                  tags: selectedTags,
                 });
               });
             }

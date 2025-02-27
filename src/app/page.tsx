@@ -245,7 +245,7 @@ export default function Home() {
             </div>
             <div className="w-2/3 md:w-1/3 h-12 flex flex-row place-content-center items-center space-x-2">
               <button
-                className="bg-yellow-600/50 border-yellow-600 w-1/3"
+                className="bg-yellow-600/10 border-yellow-600 w-1/3"
                 onClick={() => {
                   setCurrentView("HintsScreen");
                 }}

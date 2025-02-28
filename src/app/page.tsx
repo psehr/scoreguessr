@@ -51,7 +51,7 @@ export default function Home() {
     });
   }, []);
 
-  const [scoreDrafts, setScoreDrafts] = useState<ScoreDraft[]>();
+  const [scoreDrafts, setScoreDrafts] = useState<ScoreDraft[]>([]);
 
   const [selectedBeatmap, setSelectedBeatmap] = useState<BeatmapSimple>();
   const [selectedPlayer, setSelectedPlayer] = useState<PlayerSimple>();
@@ -250,7 +250,14 @@ export default function Home() {
                   setCurrentView("HintsScreen");
                 }}
               >
-                Hints
+                Hints{" "}
+                {scoreDrafts.length >= 7
+                  ? "(3 available)"
+                  : scoreDrafts.length >= 5
+                  ? "(2 available)"
+                  : scoreDrafts.length >= 3
+                  ? "(1 available)"
+                  : "(0 available)"}
               </button>
               <button
                 type="submit"
@@ -324,7 +331,11 @@ export default function Home() {
           />
         ) : null}
         {currentView === "HintsScreen" ? (
-          <HintsScreen setSelectedView={setCurrentView} />
+          <HintsScreen
+            setSelectedView={setCurrentView}
+            validScore={todayScore}
+            everyDrafts={scoreDrafts!}
+          />
         ) : null}
       </div>
     );

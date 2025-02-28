@@ -4,7 +4,6 @@ import { useEffect, useState } from "react";
 import {
   BeatmapSimple,
   GuessableScore,
-  mod,
   PlayerSimple,
   skillsetTag,
 } from "../types";
@@ -107,28 +106,28 @@ export default function AdminPanel() {
     });
   };
 
-  const renderModsCheckboxes = () => {
-    return mod.map((mod) => {
-      return (
-        <div
-          className="w-full h-4 flex flex-row space-x-2 place-content-start items-center"
-          key={mod}
-        >
-          <input
-            type="checkbox"
-            className="w-4"
-            id={mod}
-            onChange={(e) => {
-              e.target.checked
-                ? setSelectedMods([...selectedMods, mod])
-                : setSelectedMods(selectedMods.filter((value) => value != mod));
-            }}
-          />
-          <label>{mod}</label>
-        </div>
-      );
-    });
-  };
+  // const renderModsCheckboxes = () => {
+  //   return mod.map((mod) => {
+  //     return (
+  //       <div
+  //         className="w-full h-4 flex flex-row space-x-2 place-content-start items-center"
+  //         key={mod}
+  //       >
+  //         <input
+  //           type="checkbox"
+  //           className="w-4"
+  //           id={mod}
+  //           onChange={(e) => {
+  //             e.target.checked
+  //               ? setSelectedMods([...selectedMods, mod])
+  //               : setSelectedMods(selectedMods.filter((value) => value != mod));
+  //           }}
+  //         />
+  //         <label>{mod}</label>
+  //       </div>
+  //     );
+  //   });
+  // };
 
   return (
     <div className="flex flex-row w-full h-full">
@@ -153,7 +152,7 @@ export default function AdminPanel() {
         />
         <div className="w-full flex flex-row place-content-center items-start space-x-2">
           <div>{renderTagsCheckboxes()}</div>
-          <div>{renderModsCheckboxes()}</div>
+          {/* <div>{renderModsCheckboxes()}</div> */}
         </div>
         <button
           className="h-fit w-64"
@@ -187,8 +186,10 @@ export default function AdminPanel() {
                   day_index: 0,
                   pp: pp || 0,
                   yt_link: ytLink || "",
-                  mods: selectedMods,
+                  mods: score.mods,
                   tags: selectedTags,
+                  acc: score.accuracy,
+                  misscount: score.statistics.miss,
                 });
               });
             }

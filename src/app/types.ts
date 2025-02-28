@@ -1,4 +1,4 @@
-import { ModsEnum } from "osu-api-extended";
+import { Mod, ModsEnum } from "osu-api-extended";
 
 export const skillsetTag = [
   "Gimmick/Reading",
@@ -29,8 +29,9 @@ export type GuessableScore = {
   yt_link: string;
   day_index: number; // number of days since the start of the project, used to find the latest score to guess
   tags?: typeof skillsetTag;
-  mods?: typeof mod;
+  mods?: Mod[];
   acc?: number;
+  misscount?: number;
 };
 
 export type HypotheticalScore = {

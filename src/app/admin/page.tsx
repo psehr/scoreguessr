@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import {
   BeatmapSimple,
   GuessableScore,
+  OsuUser,
   PlayerSimple,
   skillsetTag,
 } from "../types";
@@ -15,8 +16,26 @@ import {
   fetchAllScores,
   fetchCurrentScore,
 } from "../_services/firebase/scores";
+import { useSession } from "next-auth/react";
+import Error from "next/error";
 
 export default function AdminPanel() {
+  const session = useSession();
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [currentUser, setCurrentUser] = useState<OsuUser | undefined>();
+
+  useEffect(() => {
+    setIsAuthenticated(session.status == "authenticated");
+    session.status == "authenticated"
+      ? setCurrentUser({
+          id: parseInt(session.data.user?.image?.split("/")[3]!),
+          name: session.data.user?.name!,
+          image: session.data.user?.image!,
+          country_code: "FR",
+        })
+      : setCurrentUser(undefined);
+  }, [session.status]);
+
   const [scoreID, setScoreID] = useState<number | null>(null);
   const [ytLink, setYtLink] = useState<string | null>(null);
   const [pp, setPP] = useState<number | null>(null);
@@ -129,111 +148,122 @@ export default function AdminPanel() {
   //   });
   // };
 
-  return (
-    <div className="flex flex-row w-full h-full">
-      <div className="w-1/3 h-full bg-black/15 flex flex-col place-content-center items-center p-4 space-y-4">
-        <input
-          type="number"
-          className="h-fit w-64 p-1"
-          placeholder="Enter score id here.."
-          onChange={(e) => setScoreID(parseInt(e.target.value))}
-        />
-        <input
-          type="number"
-          className="h-fit w-64 p-1"
-          placeholder="Enter pp here.."
-          onChange={(e) => setPP(parseInt(e.target.value))}
-        />
-        <input
-          type="text"
-          className="h-fit w-64 p-1"
-          placeholder="Enter youtube url here.."
-          onChange={(e) => setYtLink(e.target.value)}
-        />
-        <div className="w-full flex flex-row place-content-center items-start space-x-2">
-          <div>{renderTagsCheckboxes()}</div>
-          {/* <div>{renderModsCheckboxes()}</div> */}
-        </div>
-        <button
-          className="h-fit w-64"
-          onClick={() => {
-            if (scoreID) {
-              lookupScore(scoreID).then(async (score) => {
-                const ranked_year = new Date(
-                  Date.parse((await lookupMap(score.beatmapset.id)).ranked_date)
-                ).getFullYear();
+  switch (session.status) {
+    case "loading":
+      return <Loading />;
+    case "unauthenticated":
+      return <Error statusCode={401} title="Unauthorized" />;
+    case "authenticated":
+      if (currentUser?.name == "pseh") {
+        return (
+          <div className="flex flex-row w-full h-full">
+            <div className="w-1/3 h-full bg-black/15 flex flex-col place-content-center items-center p-4 space-y-4">
+              <input
+                type="number"
+                className="h-fit w-64 p-1"
+                placeholder="Enter score id here.."
+                onChange={(e) => setScoreID(parseInt(e.target.value))}
+              />
+              <input
+                type="number"
+                className="h-fit w-64 p-1"
+                placeholder="Enter pp here.."
+                onChange={(e) => setPP(parseInt(e.target.value))}
+              />
+              <input
+                type="text"
+                className="h-fit w-64 p-1"
+                placeholder="Enter youtube url here.."
+                onChange={(e) => setYtLink(e.target.value)}
+              />
+              <div className="w-full flex flex-row place-content-center items-start space-x-2">
+                <div>{renderTagsCheckboxes()}</div>
+                {/* <div>{renderModsCheckboxes()}</div> */}
+              </div>
+              <button
+                className="h-fit w-64"
+                onClick={() => {
+                  if (scoreID) {
+                    lookupScore(scoreID).then(async (score) => {
+                      const ranked_year = new Date(
+                        Date.parse(
+                          (await lookupMap(score.beatmapset.id)).ranked_date
+                        )
+                      ).getFullYear();
 
-                const beatmap: BeatmapSimple = {
-                  artist: score.beatmapset.artist,
-                  title: score.beatmapset.title,
-                  creator: score.beatmapset.creator,
-                  id: score.beatmapset.id,
-                  cover: score.beatmapset.covers.cover,
-                  rankYear: ranked_year,
-                };
+                      const beatmap: BeatmapSimple = {
+                        artist: score.beatmapset.artist,
+                        title: score.beatmapset.title,
+                        creator: score.beatmapset.creator,
+                        id: score.beatmapset.id,
+                        cover: score.beatmapset.covers.cover,
+                        rankYear: ranked_year,
+                      };
 
-                const player: PlayerSimple = {
-                  username: score.user.username,
-                  id: score.user.id,
-                  avatar: score.user.avatar_url,
-                  country_code: score.user.country_code,
-                };
-                setNewGuessableScore({
-                  id: score.id,
-                  player: player,
-                  beatmap: beatmap,
-                  year: new Date(score.ended_at).getFullYear(),
-                  day_index: 0,
-                  pp: pp || 0,
-                  yt_link: ytLink || "",
-                  mods: score.mods,
-                  tags: selectedTags,
-                  acc: score.accuracy,
-                  misscount: score.statistics.miss,
-                });
-              });
-            }
-          }}
-        >
-          Look up
-        </button>
-        <div className="flex flex-col place-content-center items-center space-y-4">
-          {newGuessableScore ? (
-            <>
-              <BeatmapCard beatmap={newGuessableScore?.beatmap} />
-              <PlayerCard player={newGuessableScore.player} />
-              <p>
-                {newGuessableScore.pp}pp in {newGuessableScore.year}
-              </p>
-              <iframe
+                      const player: PlayerSimple = {
+                        username: score.user.username,
+                        id: score.user.id,
+                        avatar: score.user.avatar_url,
+                        country_code: score.user.country_code,
+                      };
+                      setNewGuessableScore({
+                        id: score.id,
+                        player: player,
+                        beatmap: beatmap,
+                        year: new Date(score.ended_at).getFullYear(),
+                        day_index: 0,
+                        pp: pp || 0,
+                        yt_link: ytLink || "",
+                        mods: score.mods,
+                        tags: selectedTags,
+                        acc: score.accuracy,
+                        misscount: score.statistics.miss,
+                      });
+                    });
+                  }
+                }}
+              >
+                Look up
+              </button>
+              <div className="flex flex-col place-content-center items-center space-y-4">
+                {newGuessableScore ? (
+                  <>
+                    <BeatmapCard beatmap={newGuessableScore?.beatmap} />
+                    <PlayerCard player={newGuessableScore.player} />
+                    <p>
+                      {newGuessableScore.pp}pp in {newGuessableScore.year}
+                    </p>
+                    <iframe
+                      className="w-64 h-fit"
+                      id="ytplayer"
+                      itemType="text/html"
+                      width="640"
+                      height="360"
+                      src={`https://www.youtube.com/embed/${
+                        newGuessableScore.yt_link.split("=")[1]
+                      }`}
+                    ></iframe>
+                  </>
+                ) : null}
+              </div>
+              <button
                 className="w-64 h-fit"
-                id="ytplayer"
-                itemType="text/html"
-                width="640"
-                height="360"
-                src={`https://www.youtube.com/embed/${
-                  newGuessableScore.yt_link.split("=")[1]
-                }`}
-              ></iframe>
-            </>
-          ) : null}
-        </div>
-        <button
-          className="w-64 h-fit"
-          onClick={() => {
-            if (newGuessableScore) {
-              addNewScore(newGuessableScore).then(() => {
-                window.location.reload();
-              });
-            } else alert("an error occurred");
-          }}
-        >
-          Submit
-        </button>
-      </div>
-      <div className="w-2/3 h-full flex flex-col place-content-center items-center">
-        {allScores.length ? renderScores() : <Loading />}
-      </div>
-    </div>
-  );
+                onClick={() => {
+                  if (newGuessableScore) {
+                    addNewScore(newGuessableScore).then(() => {
+                      window.location.reload();
+                    });
+                  } else alert("an error occurred");
+                }}
+              >
+                Submit
+              </button>
+            </div>
+            <div className="w-2/3 h-full flex flex-col place-content-center items-center">
+              {allScores.length ? renderScores() : <Loading />}
+            </div>
+          </div>
+        );
+      } else return <Error statusCode={401} title="Unauthorized" />;
+  }
 }

@@ -4,6 +4,7 @@ import React, { useEffect, useState } from "react";
 import {
   BeatmapSimple,
   GuessableScore,
+  OsuUser,
   PlayerSimple,
   ScoreDraft,
 } from "./types";
@@ -28,8 +29,26 @@ import {
 import WinScreen from "./views/WinScreen";
 import HintsScreen from "./views/HintsScreen";
 import { sign_in } from "./_services/auth/sign_in";
+import { useSession } from "next-auth/react";
+import { sign_out } from "./_services/auth/sign_out";
 
 export default function Home() {
+  const session = useSession();
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [currentUser, setCurrentUser] = useState<OsuUser | undefined>();
+
+  useEffect(() => {
+    setIsAuthenticated(session.status == "authenticated");
+    session.status == "authenticated"
+      ? setCurrentUser({
+          id: parseInt(session.data.user?.image?.split("/")[3]!),
+          name: session.data.user?.name!,
+          image: session.data.user?.image!,
+          country_code: "FR",
+        })
+      : setCurrentUser(undefined);
+  }, [session.status]);
+
   const [currentView, setCurrentView] = useState<
     | "Default"
     | "MapSearch"
@@ -158,7 +177,7 @@ export default function Home() {
 
   if (!todayScore) {
     return (
-      <div className="relative w-full h-full flex flex-col place-content-center items-center bg-gray-950/80">
+      <div className="relative w-full h-full flex flex-col place-content-center items-center bg-gray-950/30">
         <Loading />
       </div>
     );
@@ -166,21 +185,25 @@ export default function Home() {
     return (
       <div className="relative w-full h-full flex flex-col place-content-start items-center bg-gray-950/30">
         <div className="relative flex flex-row w-full h-1/5 md:h-1/4">
+          {/* Page Header */}
           <div className="w-full h-full p-4 md:p-8 space-y-2 flex flex-col place-content-center items-center">
-            <p className="h-1/2 text-4xl md:text-6xl font-thin">SCOREGUESSR</p>
-            <div className="h-1/2 w-fit px-8 rounded-xl bg-blue-600/20 space-x-2 font-semibold text-lg md:text-3xl text-center flex flex-row items-center place-content-center">
+            <p className="h-fit text-4xl md:text-6xl font-bold text-blue-200 border border-blue-600/50 shadow-lg bg-gradient-to-br from-blue-800/50 to-slate-950/50 p-4 px-8 rounded-3xl">
+              SCOREGUESSR
+            </p>
+            <div className="h-1/2 w-fit px-8 rounded-xl  bg-gradient-to-br from-blue-800/50 to-slate-950/50 space-x-2 font-semibold text-lg md:text-3xl text-center flex flex-row items-center place-content-center">
               <p className="">You are looking for a score worth</p>
               <p className="text-blue-400">{todayScore?.pp}pp.</p>
             </div>
           </div>
+          {/* Day counter and scoreguessr global stats */}
           <div className="absolute w-full h-full p-4 md:p-8 space-y-2 flex flex-col place-content-center items-start">
-            <div className="h-full w-1/5 flex flex-col place-content-center items-center space-y-4 bg-gray-950/30 p-4 rounded-xl">
+            <div className="h-full w-1/5 flex flex-col place-content-center items-center space-y-4 border border-red-600 bg-gradient-to-br from-red-800/50 to-slate-950/50 p-4 rounded-xl">
               <p className="text-3xl font-extrabold">
                 Day {todayScore?.day_index}
               </p>
-              <div className="flex flex-col space-y-1 place-content-center items-center">
-                <p>x found</p>
-                <p>Average guess count: x</p>
+              <div className="text-xl flex flex-col space-y-1 place-content-center items-center font-semibold">
+                <p>X found so far</p>
+                <p>Average guess count is X</p>
                 <p>
                   Next score{" "}
                   {formatDistance(nextScoreTimestamp ?? 0, new Date(), {
@@ -190,26 +213,62 @@ export default function Home() {
               </div>
             </div>
           </div>
+          {/* User area */}
           <div className="absolute w-full h-full p-4 md:p-8 space-y-2 flex flex-col place-content-center items-end">
-            <div className="h-full w-1/5 flex flex-col place-content-center items-center space-y-2 bg-gray-950/30 p-4 rounded-xl">
-              <p>[ Not logged in ]</p>
-              <button className="w-fit h-fit" onClick={sign_in}>
-                Sign in with osu!
-              </button>
-            </div>
+            {isAuthenticated ? (
+              <div className="h-full w-1/5 flex flex-col place-content-center items-center space-y-2 border border-green-600 bg-gradient-to-br from-green-800/50 to-slate-950/50 p-4 rounded-xl">
+                <div className="flex flex-row space-x-2 place-content-center items-center">
+                  <p>Logged in as </p>
+                  <PlayerCard
+                    player={{
+                      avatar: currentUser?.image!,
+                      country_code: currentUser?.country_code!,
+                      username: currentUser?.name!,
+                      id: currentUser?.id!,
+                    }}
+                  />
+                </div>
+
+                <div className="text-2xl font-extrabold flex flex-row space-x-2">
+                  <p>Your streak is</p>
+                  <p className="text-blue-400">X</p>
+                </div>
+                <button
+                  className="w-fit h-fit bg-red-600/10 border-red-600"
+                  onClick={sign_out}
+                >
+                  Sign out
+                </button>
+              </div>
+            ) : (
+              <div className="h-full w-1/5 flex flex-col place-content-center items-center space-y-2 border border-green-600 bg-gradient-to-br from-green-800/50 to-slate-950/50 p-4 rounded-xl">
+                <p>Not logged in</p>
+                <button className="w-fit h-fit" onClick={sign_in}>
+                  Sign in with osu!
+                </button>
+              </div>
+            )}
           </div>
         </div>
         <div className="w-full min-h-fit h-1/2 md:h-1/2 p-2 md:p-4 md:px-8 bg-gray-950/50 shadow-lg text-center flex flex-row place-content-center overflow-auto">
-          <table className="table-fixed w-full md:w-3/4 h-fit font-bold overflow-hidden">
-            <tbody className="text-xl md:text-4xl h-fit w-full">
-              {renderRows()}
-            </tbody>
-          </table>
+          {scoreDrafts.length ? (
+            <table className="table-fixed w-full md:w-3/4 h-fit font-bold overflow-hidden">
+              <tbody className="text-xl md:text-4xl h-fit w-full">
+                {renderRows()}
+              </tbody>
+            </table>
+          ) : (
+            <div className="flex flex-col place-content-center items-center">
+              <p className="text-white text-opacity-10 text-4xl font-bold">
+                Make a first guess..
+              </p>
+            </div>
+          )}
         </div>
         {!foundScore ? (
-          <div className=" w-full h-1/3 md:h-1/4 p-2 md:p-8 flex flex-col space-y-4 text-center items-center">
-            <div className="w-full md:w-2/3 h-fit md:h-12 flex flex-col md:flex-row space-y-1 md:space-x-4 place-content-center items-center text-sm md:text-base">
-              <div className="w-full md:w-1/4 h-10 md:h-12">
+          <div className=" w-full h-1/3 md:h-1/4 p-2 md:p-8 flex flex-col space-y-2 text-center items-center">
+            <div className="w-full md:w-full h-fit md:h-12 flex flex-col md:flex-row space-y-1 md:space-x-2 md:space-y-0 place-content-center items-center text-sm md:text-base">
+              <div className="w-full md:w-1/3 h-10 md:h-12">
                 <div className="relative w-full h-full">
                   {selectedPlayer ? (
                     <button
@@ -229,12 +288,12 @@ export default function Home() {
                         setCurrentView("PlayerSearch");
                       }}
                     >
-                      Select player
+                      Which player?
                     </button>
                   )}
                 </div>
               </div>
-              <div className="w-full md:w-1/4 h-10 md:h-12">
+              <div className="w-full md:w-1/3 h-10 md:h-12">
                 <div className="relative w-full h-full">
                   {selectedBeatmap ? (
                     <button
@@ -254,15 +313,15 @@ export default function Home() {
                         setCurrentView("MapSearch");
                       }}
                     >
-                      Select beatmap
+                      Which beatmap?
                     </button>
                   )}
                 </div>
               </div>
-              <div className="w-full md:w-1/4 h-10 md:h-12">
+              <div className="w-full md:w-1/3 h-10 md:h-12">
                 <input
                   id="ignore-placeholder"
-                  placeholder="Select year"
+                  placeholder="Which year?"
                   className="border border-blue-600 bg-blue-600/10 font-semibold"
                   type="number"
                   onChange={(e) => {
@@ -271,7 +330,7 @@ export default function Home() {
                 ></input>
               </div>
             </div>
-            <div className="w-2/3 md:w-1/3 h-12 flex flex-row place-content-center items-center space-x-2">
+            <div className="w-2/3 md:w-full h-12 flex flex-row place-content-center items-center space-x-2">
               <button
                 className="bg-yellow-600/10 border-yellow-600 w-1/3"
                 onClick={() => {
@@ -323,7 +382,7 @@ export default function Home() {
                   );
                 }}
               >
-                Submit
+                Submit guess
               </button>
             </div>
           </div>

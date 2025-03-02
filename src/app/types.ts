@@ -16,6 +16,7 @@ export const skillsetTag = [
   "Alternate",
   "Sliders/Technical",
   "Versatile",
+  "Cutstreams",
 ];
 
 export const mod = ["NM", "HD", "HR", "DT", "EZ", "FL", "NF"];
@@ -65,4 +66,26 @@ export type ScoreDraft = {
   isValidPP: boolean;
   isValidCountry: boolean;
   isValidRankedYear: boolean;
+};
+
+export type OsuUser = {
+  name: string;
+  id: number;
+  image: string;
+  country_code: string;
+};
+
+export const newUser = (osuUser: OsuUser) => {
+  return {
+    creation_timestamp: Date.now(),
+    id: osuUser.id,
+    name: osuUser.name,
+    avatar: osuUser.image,
+    country_code: osuUser.country_code,
+    found_scores_ids: [],
+    stats: {
+      total_guesses: 0,
+      total_found_scores: 0,
+    },
+  };
 };

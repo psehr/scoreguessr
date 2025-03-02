@@ -1,7 +1,7 @@
 "use server";
 
 import { v2 } from "osu-api-extended";
-import { osuAuth } from "./auth";
+import { osuApiAuth } from "./api_auth";
 import {
   SearchBeatmaps,
   SearchWiki,
@@ -12,7 +12,7 @@ import { beatmaps_details_set_response } from "osu-api-extended/dist/types/v2/be
 
 export const lookupMaps = async (search_querry: string) => {
   return new Promise<SearchBeatmaps>(async (resolve) => {
-    await osuAuth();
+    await osuApiAuth();
     const maps = await v2.search({
       query: search_querry,
       type: "beatmaps",
@@ -24,7 +24,7 @@ export const lookupMaps = async (search_querry: string) => {
 
 export const lookupPlayers = async (search_querry: string) => {
   return new Promise<SearchWiki>(async (resolve) => {
-    await osuAuth();
+    await osuApiAuth();
     const players = await v2.search({
       query: search_querry,
       type: "site",
@@ -35,7 +35,7 @@ export const lookupPlayers = async (search_querry: string) => {
 
 export const lookupScore = async (score_id: number) => {
   return new Promise<scores_details_response>(async (resolve) => {
-    await osuAuth();
+    await osuApiAuth();
     const score = await v2.scores.details({
       id: score_id,
     });
@@ -45,7 +45,7 @@ export const lookupScore = async (score_id: number) => {
 
 export const lookupMap = async (map_id: number) => {
   return new Promise<beatmaps_details_set_response>(async (resolve) => {
-    await osuAuth();
+    await osuApiAuth();
     const map = await v2.beatmaps.details({ id: map_id, type: "set" });
     resolve(map);
   });

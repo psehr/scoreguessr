@@ -20,13 +20,14 @@ import {
 
 import * as Flags from "country-flag-icons/react/3x2";
 
-import { LuArrowUp, LuArrowDown, LuCheck } from "react-icons/lu";
+import { LuArrowUp, LuArrowDown, LuCheck, LuGithub } from "react-icons/lu";
 import {
   fetchCurrentScore,
   fetchNextScoreTimestamp,
 } from "./_services/firebase/scores";
 import WinScreen from "./views/WinScreen";
 import HintsScreen from "./views/HintsScreen";
+import { sign_in } from "./_services/auth/sign_in";
 
 export default function Home() {
   const [currentView, setCurrentView] = useState<
@@ -163,15 +164,42 @@ export default function Home() {
     );
   } else
     return (
-      <div className="relative w-full h-full flex flex-col place-content-start items-center">
-        <div className="w-full h-1/5 md:h-1/4 bg-gray-950/80 p-4 md:p-8 space-y-2 flex flex-col place-content-center items-center">
-          <p className="h-1/2 text-4xl md:text-6xl font-thin">SCOREGUESSR</p>
-          <div className="h-1/2 w-fit px-8 rounded-xl bg-white/20 space-x-2 font-semibold text-lg md:text-3xl text-center flex flex-row items-center place-content-center">
-            <p className="">You are looking for a score worth</p>
-            <p className="text-blue-400">{todayScore?.pp}pp.</p>
+      <div className="relative w-full h-full flex flex-col place-content-start items-center bg-gray-950/30">
+        <div className="relative flex flex-row w-full h-1/5 md:h-1/4">
+          <div className="w-full h-full p-4 md:p-8 space-y-2 flex flex-col place-content-center items-center">
+            <p className="h-1/2 text-4xl md:text-6xl font-thin">SCOREGUESSR</p>
+            <div className="h-1/2 w-fit px-8 rounded-xl bg-blue-600/20 space-x-2 font-semibold text-lg md:text-3xl text-center flex flex-row items-center place-content-center">
+              <p className="">You are looking for a score worth</p>
+              <p className="text-blue-400">{todayScore?.pp}pp.</p>
+            </div>
+          </div>
+          <div className="absolute w-full h-full p-4 md:p-8 space-y-2 flex flex-col place-content-center items-start">
+            <div className="h-full w-1/5 flex flex-col place-content-center items-center space-y-4 bg-gray-950/30 p-4 rounded-xl">
+              <p className="text-3xl font-extrabold">
+                Day {todayScore?.day_index}
+              </p>
+              <div className="flex flex-col space-y-1 place-content-center items-center">
+                <p>x found</p>
+                <p>Average guess count: x</p>
+                <p>
+                  Next score{" "}
+                  {formatDistance(nextScoreTimestamp ?? 0, new Date(), {
+                    addSuffix: true,
+                  })}
+                </p>
+              </div>
+            </div>
+          </div>
+          <div className="absolute w-full h-full p-4 md:p-8 space-y-2 flex flex-col place-content-center items-end">
+            <div className="h-full w-1/5 flex flex-col place-content-center items-center space-y-2 bg-gray-950/30 p-4 rounded-xl">
+              <p>[ Not logged in ]</p>
+              <button className="w-fit h-fit" onClick={sign_in}>
+                Sign in with osu!
+              </button>
+            </div>
           </div>
         </div>
-        <div className="w-full min-h-fit h-1/2 md:h-1/2 p-2 md:p-4 md:px-8 bg-gray-950/90 shadow-lg text-center flex flex-row place-content-center overflow-auto">
+        <div className="w-full min-h-fit h-1/2 md:h-1/2 p-2 md:p-4 md:px-8 bg-gray-950/50 shadow-lg text-center flex flex-row place-content-center overflow-auto">
           <table className="table-fixed w-full md:w-3/4 h-fit font-bold overflow-hidden">
             <tbody className="text-xl md:text-4xl h-fit w-full">
               {renderRows()}
@@ -179,7 +207,7 @@ export default function Home() {
           </table>
         </div>
         {!foundScore ? (
-          <div className="bg-gray-950/80 w-full h-1/3 md:h-1/4 p-2 md:p-8 flex flex-col space-y-4 text-center items-center">
+          <div className=" w-full h-1/3 md:h-1/4 p-2 md:p-8 flex flex-col space-y-4 text-center items-center">
             <div className="w-full md:w-2/3 h-fit md:h-12 flex flex-col md:flex-row space-y-1 md:space-x-4 place-content-center items-center text-sm md:text-base">
               <div className="w-full md:w-1/4 h-10 md:h-12">
                 <div className="relative w-full h-full">
@@ -302,12 +330,17 @@ export default function Home() {
         ) : (
           <div className="bg-gray-950/80 w-full h-1/4 p-8 flex flex-col space-y-4 text-center items-center"></div>
         )}
-        <div className="absolute bottom-2 text-gray-400 text-sm md:text-lg">
-          Day {todayScore?.day_index} - Next score{" "}
-          {formatDistance(nextScoreTimestamp ?? 0, new Date(), {
-            addSuffix: true,
-          })}{" "}
-          - Made by @psehr
+        <div className="flex flex-col space-y-2 place-content-center items-end absolute bottom-3 right-3 text-gray-400 text-sm md:text-lg">
+          <LuGithub
+            size={28}
+            onClick={() => {
+              window.open("https://github.com/psehr");
+            }}
+            className="cursor-pointer"
+          />
+          <a href="https://osu.ppy.sh/users/9239673" className="underline">
+            Made by @psehr
+          </a>
         </div>
         {currentView === "MapSearch" ? (
           <MapSearch

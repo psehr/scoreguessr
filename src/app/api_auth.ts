@@ -1,6 +1,6 @@
 import { auth, v2 } from "osu-api-extended";
 
-export async function osuAuth() {
+export async function osuApiAuth() {
   try {
     await auth.login({
       type: "v2",

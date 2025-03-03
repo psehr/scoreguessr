@@ -35,7 +35,7 @@ export default async function RootLayout({
         >
           {children}
           <Image
-            className="absolute w-full h-full top-0 -z-10 "
+            className="absolute object-cover w-full h-full top-0 -z-10 "
             src={"/wallhaven-j8lk95.jpg"}
             alt="bg"
             width={1980}

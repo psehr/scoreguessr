@@ -187,7 +187,7 @@ export default function Home() {
         <div className="relative flex flex-row w-full h-1/5 md:h-1/4">
           {/* Page Header */}
           <div className="w-full h-full p-4 md:p-8 space-y-2 flex flex-col place-content-center items-center">
-            <p className="h-fit text-4xl md:text-6xl font-bold text-blue-200 border border-blue-600/50 shadow-lg bg-gradient-to-br from-blue-800/50 to-slate-950/50 p-4 px-8 rounded-3xl">
+            <p className="w-full md:w-fit text-center h-fit text-4xl md:text-6xl font-bold text-blue-200 border border-blue-600/50 shadow-lg bg-gradient-to-br from-blue-800/50 to-slate-950/50 p-4 px-8 rounded-3xl">
               SCOREGUESSR
             </p>
             <div className="h-1/2 w-fit px-8 rounded-xl  bg-gradient-to-br from-blue-800/50 to-slate-950/50 space-x-2 font-semibold text-lg md:text-3xl text-center flex flex-row items-center place-content-center">
@@ -196,7 +196,7 @@ export default function Home() {
             </div>
           </div>
           {/* Day counter and scoreguessr global stats */}
-          <div className="absolute w-full h-full p-4 md:p-8 space-y-2 flex flex-col place-content-center items-start">
+          {/* <div className="absolute w-full h-full p-4 md:p-8 space-y-2 hidden md:flex flex-col place-content-center items-start">
             <div className="h-full w-1/5 flex flex-col place-content-center items-center space-y-4 border border-red-600 bg-gradient-to-br from-red-800/50 to-slate-950/50 p-4 rounded-xl">
               <p className="text-3xl font-extrabold">
                 Day {todayScore?.day_index}
@@ -212,33 +212,19 @@ export default function Home() {
                 </p>
               </div>
             </div>
-          </div>
+          </div> */}
           {/* User area */}
-          <div className="absolute w-full h-full p-4 md:p-8 space-y-2 flex flex-col place-content-center items-end">
-            {isAuthenticated ? (
+          {/* <div className="absolute w-full h-full p-4 md:p-8 space-y-2 hidden md:flex flex-col place-content-center items-end">
+            {session.status == "authenticated" ? (
               <div className="h-full w-1/5 flex flex-col place-content-center items-center space-y-2 border border-green-600 bg-gradient-to-br from-green-800/50 to-slate-950/50 p-4 rounded-xl">
-                <div className="flex flex-row space-x-2 place-content-center items-center">
-                  <p>Logged in as </p>
-                  <PlayerCard
-                    player={{
-                      avatar: currentUser?.image!,
-                      country_code: currentUser?.country_code!,
-                      username: currentUser?.name!,
-                      id: currentUser?.id!,
-                    }}
-                  />
-                </div>
-
                 <div className="text-2xl font-extrabold flex flex-row space-x-2">
                   <p>Your streak is</p>
                   <p className="text-blue-400">X</p>
                 </div>
-                <button
-                  className="w-fit h-fit bg-red-600/10 border-red-600"
-                  onClick={sign_out}
-                >
-                  Sign out
-                </button>
+                <div className="text-2xl font-extrabold flex flex-row space-x-2">
+                  <p>Today: </p>
+                  <p className="text-red-400">Not Found</p>
+                </div>
               </div>
             ) : (
               <div className="h-full w-1/5 flex flex-col place-content-center items-center space-y-2 border border-green-600 bg-gradient-to-br from-green-800/50 to-slate-950/50 p-4 rounded-xl">
@@ -248,7 +234,7 @@ export default function Home() {
                 </button>
               </div>
             )}
-          </div>
+          </div> */}
         </div>
         <div className="w-full min-h-fit h-1/2 md:h-1/2 p-2 md:p-4 md:px-8 bg-gray-950/50 shadow-lg text-center flex flex-row place-content-center overflow-auto">
           {scoreDrafts.length ? (
@@ -330,9 +316,9 @@ export default function Home() {
                 ></input>
               </div>
             </div>
-            <div className="w-2/3 md:w-full h-12 flex flex-row place-content-center items-center space-x-2">
+            <div className="w-full h-fit flex flex-row place-content-center items-center space-x-2">
               <button
-                className="bg-yellow-600/10 border-yellow-600 w-1/3"
+                className="bg-yellow-600/10 border-yellow-600 w-1/2"
                 onClick={() => {
                   setCurrentView("HintsScreen");
                 }}
@@ -348,7 +334,7 @@ export default function Home() {
               </button>
               <button
                 type="submit"
-                className=" border-green-400 bg-green-600/10 w-2/3"
+                className=" border-green-400 bg-green-600/10 w-1/2"
                 onClick={() => {
                   if (
                     !selectedPlayer ||
@@ -389,17 +375,77 @@ export default function Home() {
         ) : (
           <div className="bg-gray-950/80 w-full h-1/4 p-8 flex flex-col space-y-4 text-center items-center"></div>
         )}
-        <div className="flex flex-col space-y-2 place-content-center items-end absolute bottom-3 right-3 text-gray-400 text-sm md:text-lg">
-          <LuGithub
-            size={28}
-            onClick={() => {
-              window.open("https://github.com/psehr");
-            }}
-            className="cursor-pointer"
-          />
-          <a href="https://osu.ppy.sh/users/9239673" className="underline">
-            Made by @psehr
-          </a>
+        <div className="w-full flex flex-row text-gray-400 text-sm md:text-lg">
+          <div className="flex flex-col absolute bottom-3 left-3 w-1/2 space-y-2 place-content-center items-start">
+            <div className="flex flex-row space-x-2">
+              {isAuthenticated ? (
+                <p
+                  className="underline cursor-pointer"
+                  onClick={() => {
+                    sign_out();
+                    setTimeout(() => {
+                      window.location.reload();
+                    }, 500);
+                  }}
+                >
+                  Log out
+                </p>
+              ) : (
+                <p className="underline cursor-pointer" onClick={sign_in}>
+                  Log in
+                </p>
+              )}
+              <p>-</p>
+              <p className="underline cursor-pointer">See stats</p>
+            </div>
+            {isAuthenticated ? (
+              <div className="flex flex-row space-x-2">
+                <p>Logged in as </p>
+                <PlayerCard
+                  player={{
+                    avatar: currentUser?.image!,
+                    country_code: currentUser?.country_code!,
+                    username: currentUser?.name!,
+                    id: currentUser?.id!,
+                  }}
+                />
+              </div>
+            ) : (
+              <p>You are not logged in</p>
+            )}
+          </div>
+
+          <div className="hidden md:flex flex-col absolute bottom-3 w-full place-content-center items-center space-y-2">
+            {nextScoreTimestamp && todayScore ? (
+              <>
+                <p className="font-bold">Day {todayScore.day_index ?? "?"}</p>
+                <div className="flex flex-row space-x-1">
+                  <p>Next score </p>
+                  <p className="underline">
+                    {formatDistance(nextScoreTimestamp, new Date(), {
+                      addSuffix: true,
+                    })}
+                  </p>
+                </div>
+              </>
+            ) : (
+              <div className="flex w-6">
+                <Loading />
+              </div>
+            )}
+          </div>
+          <div className="flex flex-col absolute bottom-3 right-3 w-1/2 space-y-2 place-content-center items-end">
+            <LuGithub
+              size={28}
+              onClick={() => {
+                window.open("https://github.com/psehr");
+              }}
+              className="cursor-pointer"
+            />
+            <a href="https://osu.ppy.sh/users/9239673" className="underline">
+              Made by @psehr
+            </a>
+          </div>
         </div>
         {currentView === "MapSearch" ? (
           <MapSearch

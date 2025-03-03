@@ -17,6 +17,8 @@ export const skillsetTag = [
   "Sliders/Technical",
   "Versatile",
   "Cutstreams",
+  "Squares",
+  "Stamina",
 ];
 
 export const mod = ["NM", "HD", "HR", "DT", "EZ", "FL", "NF"];

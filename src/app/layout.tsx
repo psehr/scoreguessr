@@ -41,7 +41,7 @@ export default async function RootLayout({
             width={1980}
             height={1280}
           />
-          <div className="absolute w-full h-full top-0 -z-10 backdrop-blur-md"></div>
+          <div className="absolute w-full h-full top-0 -z-10 backdrop-blur-md bg-gray-950/60"></div>
         </body>
       </SessionProvider>
     </html>

@@ -31,6 +31,7 @@ import HintsScreen from "./views/HintsScreen";
 import { sign_in } from "./_services/auth/sign_in";
 import { useSession } from "next-auth/react";
 import { sign_out } from "./_services/auth/sign_out";
+import { addFoundScoreToUser } from "./_services/firebase/user";
 
 export default function Home() {
   const session = useSession();
@@ -88,6 +89,9 @@ export default function Home() {
       lastDraft.isValidPlayer &&
       lastDraft.isValidYear
     ) {
+      isAuthenticated
+        ? addFoundScoreToUser(todayScore!, currentUser?.id!, scoreDrafts.length)
+        : null;
       setCurrentView("WinScreen");
       setFoundScore(true);
     }
@@ -177,13 +181,13 @@ export default function Home() {
 
   if (!todayScore) {
     return (
-      <div className="relative w-full h-full flex flex-col place-content-center items-center bg-gray-950/30">
+      <div className="relative w-full h-full flex flex-col place-content-center items-center">
         <Loading />
       </div>
     );
   } else
     return (
-      <div className="relative w-full h-full flex flex-col place-content-start items-center bg-gray-950/30">
+      <div className="relative w-full h-full flex flex-col place-content-start items-center">
         <div className="relative flex flex-row w-full h-1/5 md:h-1/4">
           {/* Page Header */}
           <div className="w-full h-full p-4 md:p-8 space-y-2 flex flex-col place-content-center items-center">
@@ -195,48 +199,8 @@ export default function Home() {
               <p className="text-blue-400">{todayScore?.pp}pp.</p>
             </div>
           </div>
-          {/* Day counter and scoreguessr global stats */}
-          {/* <div className="absolute w-full h-full p-4 md:p-8 space-y-2 hidden md:flex flex-col place-content-center items-start">
-            <div className="h-full w-1/5 flex flex-col place-content-center items-center space-y-4 border border-red-600 bg-gradient-to-br from-red-800/50 to-slate-950/50 p-4 rounded-xl">
-              <p className="text-3xl font-extrabold">
-                Day {todayScore?.day_index}
-              </p>
-              <div className="text-xl flex flex-col space-y-1 place-content-center items-center font-semibold">
-                <p>X found so far</p>
-                <p>Average guess count is X</p>
-                <p>
-                  Next score{" "}
-                  {formatDistance(nextScoreTimestamp ?? 0, new Date(), {
-                    addSuffix: true,
-                  })}
-                </p>
-              </div>
-            </div>
-          </div> */}
-          {/* User area */}
-          {/* <div className="absolute w-full h-full p-4 md:p-8 space-y-2 hidden md:flex flex-col place-content-center items-end">
-            {session.status == "authenticated" ? (
-              <div className="h-full w-1/5 flex flex-col place-content-center items-center space-y-2 border border-green-600 bg-gradient-to-br from-green-800/50 to-slate-950/50 p-4 rounded-xl">
-                <div className="text-2xl font-extrabold flex flex-row space-x-2">
-                  <p>Your streak is</p>
-                  <p className="text-blue-400">X</p>
-                </div>
-                <div className="text-2xl font-extrabold flex flex-row space-x-2">
-                  <p>Today: </p>
-                  <p className="text-red-400">Not Found</p>
-                </div>
-              </div>
-            ) : (
-              <div className="h-full w-1/5 flex flex-col place-content-center items-center space-y-2 border border-green-600 bg-gradient-to-br from-green-800/50 to-slate-950/50 p-4 rounded-xl">
-                <p>Not logged in</p>
-                <button className="w-fit h-fit" onClick={sign_in}>
-                  Sign in with osu!
-                </button>
-              </div>
-            )}
-          </div> */}
         </div>
-        <div className="w-full min-h-fit h-1/2 md:h-1/2 p-2 md:p-4 md:px-8 bg-gray-950/50 shadow-lg text-center flex flex-row place-content-center overflow-auto">
+        <div className="w-full min-h-fit h-1/2 md:h-1/2 p-2 md:p-4 md:px-8 text-center flex flex-row place-content-center overflow-auto">
           {scoreDrafts.length ? (
             <table className="table-fixed w-full md:w-3/4 h-fit font-bold overflow-hidden">
               <tbody className="text-xl md:text-4xl h-fit w-full">
@@ -373,9 +337,9 @@ export default function Home() {
             </div>
           </div>
         ) : (
-          <div className="bg-gray-950/80 w-full h-1/4 p-8 flex flex-col space-y-4 text-center items-center"></div>
+          <div className="w-full h-1/4 p-8 flex flex-col space-y-4 text-center items-center"></div>
         )}
-        <div className="w-full flex flex-row text-gray-400 text-sm md:text-lg">
+        <div className="place-content-center items-center w-full flex flex-row text-gray-400 text-sm md:text-lg">
           <div className="flex flex-col absolute bottom-3 left-3 w-1/2 space-y-2 place-content-center items-start">
             <div className="flex flex-row space-x-2">
               {isAuthenticated ? (
@@ -415,7 +379,7 @@ export default function Home() {
             )}
           </div>
 
-          <div className="hidden md:flex flex-col absolute bottom-3 w-full place-content-center items-center space-y-2">
+          <div className="hidden md:flex flex-col absolute bottom-3 place-content-center items-center space-y-2">
             {nextScoreTimestamp && todayScore ? (
               <>
                 <p className="font-bold">Day {todayScore.day_index ?? "?"}</p>

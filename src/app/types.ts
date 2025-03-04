@@ -77,6 +77,21 @@ export type OsuUser = {
   country_code: string;
 };
 
+export type ScoreguessrUser = {
+  creation_timestamp: number;
+  id: number;
+  name: string;
+  avatar: string;
+  country_code: string;
+  found_scores: GuessableScore[];
+  stats: {
+    total_guesses: number;
+    total_found_scores: number;
+    streak: number;
+    max_streak: number;
+  };
+};
+
 export const newUser = (osuUser: OsuUser) => {
   return {
     creation_timestamp: Date.now(),
@@ -84,10 +99,12 @@ export const newUser = (osuUser: OsuUser) => {
     name: osuUser.name,
     avatar: osuUser.image,
     country_code: osuUser.country_code,
-    found_scores_ids: [],
+    found_scores: [],
     stats: {
       total_guesses: 0,
       total_found_scores: 0,
+      streak: 0,
+      max_streak: 0,
     },
-  };
+  } as ScoreguessrUser;
 };

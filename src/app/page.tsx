@@ -31,7 +31,11 @@ import HintsScreen from "./views/HintsScreen";
 import { sign_in } from "./_services/auth/sign_in";
 import { useSession } from "next-auth/react";
 import { sign_out } from "./_services/auth/sign_out";
-import { addFoundScoreToUser } from "./_services/firebase/user";
+import {
+  addFoundScoreToUser,
+  checkIfScoreHasAlreadyBeenFound,
+  updateUserStatsAfterFoundScore,
+} from "./_services/firebase/user";
 
 export default function Home() {
   const session = useSession();
@@ -40,14 +44,16 @@ export default function Home() {
 
   useEffect(() => {
     setIsAuthenticated(session.status == "authenticated");
-    session.status == "authenticated"
-      ? setCurrentUser({
-          id: parseInt(session.data.user?.image?.split("/")[3]!),
-          name: session.data.user?.name!,
-          image: session.data.user?.image!,
-          country_code: "FR",
-        })
-      : setCurrentUser(undefined);
+    if (session.status == "authenticated") {
+      setCurrentUser({
+        id: parseInt(session.data.user?.image?.split("/")[3]!),
+        name: session.data.user?.name!,
+        image: session.data.user?.image!,
+        country_code: "FR",
+      });
+    } else {
+      setCurrentUser(undefined);
+    }
   }, [session.status]);
 
   const [currentView, setCurrentView] = useState<
@@ -89,9 +95,25 @@ export default function Home() {
       lastDraft.isValidPlayer &&
       lastDraft.isValidYear
     ) {
-      isAuthenticated
-        ? addFoundScoreToUser(todayScore!, currentUser?.id!, scoreDrafts.length)
-        : null;
+      if (isAuthenticated) {
+        checkIfScoreHasAlreadyBeenFound(currentUser?.id!, todayScore?.id!).then(
+          (hasAlreadbyBeenFound) => {
+            if (!hasAlreadbyBeenFound) {
+              addFoundScoreToUser(
+                todayScore!,
+                currentUser?.id!,
+                scoreDrafts.length
+              );
+              updateUserStatsAfterFoundScore(currentUser?.id!, {
+                day_index: todayScore?.day_index!,
+                score_id: todayScore?.id!,
+                guess_count: scoreDrafts.length,
+              });
+            }
+          }
+        );
+      }
+
       setCurrentView("WinScreen");
       setFoundScore(true);
     }

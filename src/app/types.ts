@@ -70,6 +70,12 @@ export type ScoreDraft = {
   isValidRankedYear: boolean;
 };
 
+export type ScoreSimple = {
+  score_id: number;
+  day_index: number;
+  guess_count: number;
+};
+
 export type OsuUser = {
   name: string;
   id: number;
@@ -87,8 +93,7 @@ export type ScoreguessrUser = {
   stats: {
     total_guesses: number;
     total_found_scores: number;
-    streak: number;
-    max_streak: number;
+    avg_guesses: number;
   };
 };
 
@@ -103,8 +108,7 @@ export const newUser = (osuUser: OsuUser) => {
     stats: {
       total_guesses: 0,
       total_found_scores: 0,
-      streak: 0,
-      max_streak: 0,
+      avg_guesses: 0,
     },
   } as ScoreguessrUser;
 };

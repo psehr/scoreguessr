@@ -5,7 +5,7 @@ import {
   SearchWiki,
 } from "osu-api-extended/dist/types/v2/search_all";
 import Image from "next/image";
-import { lookupMaps, lookupPlayers } from "../api_fct";
+import { lookupMaps, lookupPlayers } from "../_services/osu_api/api_fct";
 import { Loading } from "./MapSearch";
 
 export const PlayerCard = ({ player }: { player: PlayerSimple }) => {

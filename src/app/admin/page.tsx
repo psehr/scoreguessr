@@ -8,7 +8,7 @@ import {
   PlayerSimple,
   skillsetTag,
 } from "../types";
-import { lookupMap, lookupScore } from "../api_fct";
+import { lookupMap, lookupScore } from "../_services/osu_api/api_fct";
 import { BeatmapCard, Loading } from "../views/MapSearch";
 import { PlayerCard } from "../views/PlayerSearch";
 import {

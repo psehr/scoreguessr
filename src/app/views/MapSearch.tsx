@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { BeatmapSimple } from "../types";
 import { Beatmapset } from "osu-api-extended/dist/types/v2/search_all";
 import Image from "next/image";
-import { lookupMaps } from "../api_fct";
+import { lookupMaps } from "../_services/osu_api/api_fct";
 
 import { TbFidgetSpinner } from "react-icons/tb";
 
@@ -130,22 +130,27 @@ export default function MapSearch({
           </div>
         ) : (
           <div className="w-full h-5/6 flex flex-col space-y-2 overflow-auto ">
-            {mapSearchResults?.slice(0, 5).map((beatmap) => {
-              return (
-                <div
-                  className="w-full flex flex-row h-12 bg-black/40 hover:bg-black/70 cursor-pointer rounded-xl"
-                  key={beatmap.id}
-                  onClick={() => {
-                    setSelectedView("Default");
-                    setSelectedBeatmap(beatmap);
-                  }}
-                >
-                  <div className="w-full px-2">
-                    <BeatmapCard beatmap={beatmap} />
+            {mapSearchResults
+              ?.slice(
+                0,
+                mapSearchResults.length < 10 ? mapSearchResults.length : 10
+              )
+              .map((beatmap) => {
+                return (
+                  <div
+                    className="w-full flex flex-row h-12 bg-black/40 hover:bg-black/70 cursor-pointer rounded-xl"
+                    key={beatmap.id}
+                    onClick={() => {
+                      setSelectedView("Default");
+                      setSelectedBeatmap(beatmap);
+                    }}
+                  >
+                    <div className="w-full px-2">
+                      <BeatmapCard beatmap={beatmap} />
+                    </div>
                   </div>
-                </div>
-              );
-            })}
+                );
+              })}
           </div>
         )}
         <div className="w-full h-1/6 flex flex-row place-content-center items-center">

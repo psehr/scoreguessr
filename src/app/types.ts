@@ -89,7 +89,7 @@ export type ScoreguessrUser = {
   name: string;
   avatar: string;
   country_code: string;
-  found_scores: GuessableScore[];
+  found_scores: ScoreSimple[];
   stats: {
     total_guesses: number;
     total_found_scores: number;

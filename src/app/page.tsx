@@ -36,6 +36,7 @@ import {
   checkIfScoreHasAlreadyBeenFound,
   updateUserStatsAfterFoundScore,
 } from "./_services/firebase/user";
+import BackLog from "./views/BackLog";
 
 export default function Home() {
   const session = useSession();
@@ -63,6 +64,7 @@ export default function Home() {
     | "WinScreen"
     | "Loading"
     | "HintsScreen"
+    | "BackLog"
   >("Default");
 
   const [todayScore, setTodayScore] = useState<GuessableScore>();
@@ -206,6 +208,15 @@ export default function Home() {
       <div className="relative w-full h-full flex flex-col place-content-center items-center">
         <Loading />
       </div>
+    );
+  } else if (currentView == "BackLog") {
+    return (
+      <BackLog
+        todayScore={todayScore}
+        setCurrentView={setCurrentView}
+        isAuthenticated={isAuthenticated}
+        user_id={currentUser?.id}
+      />
     );
   } else
     return (
@@ -362,7 +373,7 @@ export default function Home() {
           <div className="w-full h-1/4 p-8 flex flex-col space-y-4 text-center items-center"></div>
         )}
         <div className="place-content-center items-center w-full flex flex-row text-gray-400 text-sm md:text-lg">
-          <div className="flex flex-col absolute bottom-3 left-3 w-1/2 space-y-2 place-content-center items-start">
+          <div className="flex flex-col absolute bottom-3 left-3 space-y-2 place-content-center items-start">
             <div className="flex flex-row space-x-2">
               {isAuthenticated ? (
                 <p
@@ -404,10 +415,19 @@ export default function Home() {
           <div className="hidden md:flex flex-col absolute bottom-3 place-content-center items-center space-y-2">
             {nextScoreTimestamp && todayScore ? (
               <>
-                <p className="font-bold">Day {todayScore.day_index ?? "?"}</p>
+                <div className="flex flex-row space-x-1">
+                  <p className="font-bold">Day {todayScore.day_index ?? "?"}</p>
+                  <p>-</p>
+                  <p
+                    className="underline cursor-pointer"
+                    onClick={() => setCurrentView("BackLog")}
+                  >
+                    Previous days
+                  </p>
+                </div>
                 <div className="flex flex-row space-x-1">
                   <p>Next score </p>
-                  <p className="underline">
+                  <p>
                     {formatDistance(nextScoreTimestamp, new Date(), {
                       addSuffix: true,
                     })}
@@ -420,7 +440,7 @@ export default function Home() {
               </div>
             )}
           </div>
-          <div className="flex flex-col absolute bottom-3 right-3 w-1/2 space-y-2 place-content-center items-end">
+          <div className="flex flex-col absolute bottom-3 right-3 space-y-2 place-content-center items-end">
             <LuGithub
               size={28}
               onClick={() => {

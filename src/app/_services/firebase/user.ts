@@ -4,6 +4,15 @@ import { resolve } from "path";
 import { GuessableScore, ScoreguessrUser, ScoreSimple } from "../../types";
 import dbSession from "./session";
 
+export async function fetchScoreguessrUser(user_id: number) {
+  return new Promise<ScoreguessrUser>(async (resolve, reject) => {
+    const dbUser = dbSession.collection("users").doc(user_id.toString());
+    dbUser.get().then((d) => {
+      resolve(d.data() as ScoreguessrUser);
+    });
+  });
+}
+
 export async function checkIfScoreHasAlreadyBeenFound(
   user_id: number,
   score_id: number

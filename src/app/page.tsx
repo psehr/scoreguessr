@@ -130,8 +130,11 @@ export default function Home() {
           scoreDraft.score.player.country_code.toUpperCase() as keyof typeof Flags
         ];
       return (
-        <tr className="" key={scoreDraft.attempt}>
-          <td className="w-1/4 h-16" key={`player_name-${scoreDraft.attempt}`}>
+        <tr className="w-1/4 h-16" key={scoreDraft.attempt}>
+          <td
+            className="w-fit h-full"
+            key={`player_name-${scoreDraft.attempt}`}
+          >
             <div className="w-full h-full flex flex-row place-content-center items-center">
               <div
                 className={`w-full h-full flex flex-col space-y-1 md:space-y-0 md:flex-row place-content-center items-center text-sm md:text-2xl p-2 rounded-xl ${
@@ -233,9 +236,9 @@ export default function Home() {
             </div>
           </div>
         </div>
-        <div className="w-full min-h-fit h-1/2 md:h-1/2 p-2 md:p-4 md:px-8 text-center flex flex-row place-content-center overflow-auto">
+        <div className="w-full h-1/2 p-2 md:p-4 md:px-8 text-center flex flex-row place-content-center overflow-auto">
           {scoreDrafts.length ? (
-            <table className="table-fixed w-full md:w-3/4 h-fit font-bold overflow-hidden">
+            <table className="table-fixed w-full md:w-3/4 h-fit font-bold ">
               <tbody className="text-xl md:text-4xl h-fit w-full">
                 {renderRows()}
               </tbody>

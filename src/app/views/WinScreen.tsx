@@ -20,9 +20,7 @@ export default function WinScreen({
       >
         <div className="flex flex-col place-content-center items-center w-full h-1/4">
           <p className="text-2xl font-semibold">Congratulations ! 🥳</p>
-          <p>
-            It took you {everyDrafts.length} attempt(s) to find today's score.
-          </p>
+          <p>It took you {everyDrafts.length} attempt(s) to find this score.</p>
         </div>
         <div className="flex place-content-center items-center w-full h-1/2">
           <iframe

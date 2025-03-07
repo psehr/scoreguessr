@@ -78,3 +78,15 @@ export async function fetchNextScoreTimestamp() {
     resolve(next_day_time);
   });
 }
+
+export async function fetchScoreFromDayIndex(day_index: number) {
+  return new Promise<GuessableScore>(async (resolve, reject) => {
+    const validScores = await db
+      .collection("scores")
+      .where("day_index", "==", day_index)
+      .get();
+    validScores.docs
+      ? resolve(validScores.docs[0].data() as GuessableScore)
+      : reject();
+  });
+}

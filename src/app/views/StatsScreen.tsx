@@ -7,6 +7,7 @@ import { PlayerCard } from "./PlayerSearch";
 import * as Flags from "country-flag-icons/react/3x2";
 import { formatDistance, sub, subDays } from "date-fns";
 import { Loading } from "./MapSearch";
+import { fetchCurrentScore } from "../_services/firebase/scores";
 
 export default function StatsScreen({
   setSelectedView,
@@ -20,6 +21,7 @@ export default function StatsScreen({
   user?: OsuUser;
 }) {
   const [userData, setUserData] = useState<ScoreguessrUser>();
+  const [todayScore, setTodayScore] = useState<GuessableScore>();
 
   useEffect(() => {
     if (user) {
@@ -28,6 +30,10 @@ export default function StatsScreen({
       });
     }
   }, [user]);
+
+  useEffect(() => {
+    fetchCurrentScore().then((score) => setTodayScore(score));
+  }, []);
 
   let Flag = Flags[userData?.country_code.toUpperCase() as keyof typeof Flags];
 
@@ -50,7 +56,7 @@ export default function StatsScreen({
             </div>
             <div className="h-1/2 font-bold flex flex-col place-content-center items-center text-2xl space-y-4"></div>
           </div>
-        </div>{" "}
+        </div>
         <div className="flex flex-col w-1/3 h-full bg-white/10 rounded-xl place-content-start items-center text-xl shadow-md">
           <div className="flex flex-col space-y-8 h-full w-full place-content-start items-center">
             <div className="h-1/4 font-bold flex flex-col place-content-center items-center text-2xl space-y-4">
@@ -63,7 +69,7 @@ export default function StatsScreen({
           </div>
         </div>
         <div className="flex flex-col w-1/3 h-full bg-white/10 rounded-xl place-content-start items-center text-xl shadow-md">
-          {userData ? (
+          {userData && todayScore ? (
             <div className="flex flex-col space-y-8 h-full w-full place-content-start items-center">
               <div className="h-1/4 font-bold flex flex-col place-content-center items-center text-2xl space-y-4">
                 <p className="font-extrabold underline">Your profile</p>
@@ -93,7 +99,7 @@ export default function StatsScreen({
                 <div className="flex flex-row space-x-1">
                   <p>Found</p>
                   <p className="font-bold text-green-400">
-                    {userData.found_scores.length}/{score.day_index + 1}
+                    {userData.found_scores.length}/{todayScore?.day_index + 1}
                   </p>
                   <p>scores</p>
                 </div>

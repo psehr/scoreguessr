@@ -93,8 +93,18 @@ export default function HintsScreen({
               Hint 1: Accuracy
             </p>
             {everyDrafts.length >= 3 ? (
-              <div className="flex flex-row space-x-2 text-xl p-1 px-4 bg-slate-500">
-                <p>Accuracy is {((validScore.acc || 1) * 100).toFixed(2)}%</p>
+              <div className="relative flex flex-row text-xl p-1 px-4 bg-slate-500 place-content-center items-center">
+                <div className="flex flex-row space-x-2">
+                  <p>Accuracy is</p>
+                  <p className="font-bold">
+                    {((validScore.acc || 1) * 100).toFixed(2)}%
+                  </p>
+                </div>
+                <div className="absolute group hover:backdrop-blur-none transition-all cursor-pointer flex w-full h-full backdrop-blur-md place-content-center items-center">
+                  <p className="text-gray-400 font-bold group-hover:hidden">
+                    Hover to show hint
+                  </p>
+                </div>
               </div>
             ) : (
               <div className="text-xl p-1 px-4 bg-slate-500">
@@ -113,12 +123,15 @@ export default function HintsScreen({
               Hint 2: Mods
             </p>
             {everyDrafts.length >= 5 ? (
-              <div className="flex flex-row space-x-1 text-xl p-1 px-4 bg-slate-500">
-                <p>Used mods: </p>
-                <div>
-                  {!validScore.mods?.length
-                    ? "None"
-                    : validScore.mods?.map((mod) =>
+              <div className="relative flex flex-row text-xl p-1 px-4 bg-slate-500 place-content-center items-center">
+                <div className="flex flex-row space-x-1">
+                  <p>Used mods: </p>
+                  <div className="font-bold">
+                    {!validScore.mods?.filter((mod) => mod.acronym != "CL")
+                      .length ? (
+                      <p>None</p>
+                    ) : (
+                      validScore.mods?.map((mod) =>
                         getModIcon(mod) ? (
                           <Image
                             key={mod.acronym}
@@ -129,7 +142,14 @@ export default function HintsScreen({
                         ) : (
                           mod.acronym
                         )
-                      )}
+                      )
+                    )}
+                  </div>
+                </div>
+                <div className="absolute group hover:backdrop-blur-none transition-all cursor-pointer flex w-full h-full backdrop-blur-md place-content-center items-center">
+                  <p className="text-gray-400 font-bold group-hover:hidden">
+                    Hover to show hint
+                  </p>
                 </div>
               </div>
             ) : (
@@ -150,10 +170,19 @@ export default function HintsScreen({
               Hint 3: Tags
             </p>
             {everyDrafts.length >= 7 ? (
-              <div className="text-xl p-1 px-4 bg-slate-500">
-                {validScore.tags?.map((tag) => (
-                  <p key={tag}>{tag}</p>
-                ))}
+              <div className="relative text-xl p-1 px-4 bg-slate-500 flex place-content-center items-center">
+                <div className="flex flex-col">
+                  {validScore.tags?.map((tag) => (
+                    <p key={tag} className="font-bold">
+                      {tag}
+                    </p>
+                  ))}
+                </div>
+                <div className="absolute group hover:backdrop-blur-none transition-all cursor-pointer flex w-full h-full backdrop-blur-md place-content-center items-center">
+                  <p className="text-gray-400 font-bold group-hover:hidden">
+                    Hover to show hint
+                  </p>
+                </div>
               </div>
             ) : (
               <div className="text-xl p-1 px-4 bg-slate-500">

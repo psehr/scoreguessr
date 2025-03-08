@@ -7,5 +7,5 @@
 - [x] Hints (tags at 3, acc + misscount at 5, mods at 7)
 - [x] osu! Auth
 - [ ] Statistics
-- [ ] Day backlog
+- [x] Day backlog
 - [ ] More admin tools

@@ -27,6 +27,7 @@ import {
 import WinScreen from "./WinScreen";
 import HintsScreen from "./HintsScreen";
 import { useRouter } from "next/navigation";
+import StatsScreen from "./StatsScreen";
 
 export default function Game({
   score,
@@ -46,6 +47,7 @@ export default function Game({
     | "WinScreen"
     | "HintsScreen"
     | "BackLog"
+    | "StatsScreen"
   >("Default");
 
   const [scoreDrafts, setScoreDrafts] = useState<ScoreDraft[]>([]);
@@ -355,7 +357,12 @@ export default function Game({
               </p>
             )}
             <p>-</p>
-            <p className="underline cursor-pointer">See stats</p>
+            <p
+              className="underline cursor-pointer"
+              onClick={() => setCurrentView("StatsScreen")}
+            >
+              See stats
+            </p>
           </div>
           {isAuthenticated ? (
             <div className="flex flex-row space-x-2">
@@ -459,6 +466,14 @@ export default function Game({
           setSelectedView={setCurrentView}
           validScore={score}
           everyDrafts={scoreDrafts!}
+        />
+      ) : null}
+      {currentView === "StatsScreen" ? (
+        <StatsScreen
+          setSelectedView={setCurrentView}
+          score={score}
+          isAuthenticated={isAuthenticated}
+          user={user}
         />
       ) : null}
     </div>

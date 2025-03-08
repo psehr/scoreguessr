@@ -22,8 +22,6 @@ export default function Home() {
         image: session.data.user?.image!,
         country_code: "FR",
       });
-    } else {
-      setCurrentUser(undefined);
     }
   }, [session.status]);
 

@@ -4,7 +4,10 @@ import { useRouter } from "next/navigation";
 import Game from "../../views/Game";
 import { GuessableScore, OsuUser } from "../../types";
 import { useEffect, useState } from "react";
-import { fetchScoreFromDayIndex } from "../../_services/firebase/scores";
+import {
+  fetchCurrentScore,
+  fetchScoreFromDayIndex,
+} from "../../_services/firebase/scores";
 import { Loading } from "../../views/MapSearch";
 import { useSession } from "next-auth/react";
 
@@ -34,6 +37,8 @@ export default function PreviousScoreDay({
   const [dayIndex, setDayIndex] = useState<string>();
   const [score, setScore] = useState<GuessableScore>();
 
+  const [isToday, setIsToday] = useState<boolean>(false);
+
   useEffect(() => {
     params.then((p) => setDayIndex(p.day_index));
   }, []);
@@ -41,6 +46,9 @@ export default function PreviousScoreDay({
   useEffect(() => {
     if (dayIndex) {
       fetchScoreFromDayIndex(parseInt(dayIndex)).then((score) => {
+        fetchCurrentScore().then((todayScore) =>
+          setIsToday(todayScore.day_index == parseInt(dayIndex))
+        );
         setScore(score);
       });
     }
@@ -50,7 +58,7 @@ export default function PreviousScoreDay({
     return (
       <Game
         isAuthenticated={isAuthenticated}
-        isToday={false}
+        isToday={isToday}
         score={score}
         user={currentUser}
       />

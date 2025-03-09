@@ -106,7 +106,7 @@ export default function AdminPanel() {
     return skillsetTag.map((tag) => {
       return (
         <div
-          className="w-full h-4 flex flex-row space-x-2 place-content-start items-center text-sm"
+          className="w-48 h-4 flex flex-row space-x-2 place-content-start items-center text-sm"
           key={tag}
         >
           <input
@@ -157,109 +157,112 @@ export default function AdminPanel() {
       if (currentUser?.name == "pseh") {
         return (
           <div className="flex flex-row w-full h-full">
-            <div className="w-1/3 h-full bg-black/15 flex flex-col place-content-center items-center p-4 space-y-4">
-              <input
-                type="number"
-                className="h-fit w-64 p-1"
-                placeholder="Enter score id here.."
-                onChange={(e) => setScoreID(parseInt(e.target.value))}
-              />
-              <input
-                type="number"
-                className="h-fit w-64 p-1"
-                placeholder="Enter pp here.."
-                onChange={(e) => setPP(parseInt(e.target.value))}
-              />
-              <input
-                type="text"
-                className="h-fit w-64 p-1"
-                placeholder="Enter youtube url here.."
-                onChange={(e) => setYtLink(e.target.value)}
-              />
-              <div className="w-full flex flex-row place-content-center items-start space-x-2">
-                <div>{renderTagsCheckboxes()}</div>
-                {/* <div>{renderModsCheckboxes()}</div> */}
+            <div className="w-1/3 h-full bg-black/40 flex flex-col place-content-center items-center">
+              <div className="w-full h-1/3 bg-green-400/10 flex flex-col space-y-1 place-content-center items-center">
+                <input
+                  type="number"
+                  className="h-fit w-64 p-1"
+                  placeholder="Score ID"
+                  onChange={(e) => setScoreID(parseInt(e.target.value))}
+                />
+                <input
+                  type="number"
+                  className="h-fit w-64 p-1"
+                  placeholder="PP"
+                  onChange={(e) => setPP(parseInt(e.target.value))}
+                />
+                <input
+                  type="text"
+                  className="h-fit w-64 p-1"
+                  placeholder="YouTube URL"
+                  onChange={(e) => setYtLink(e.target.value)}
+                />
               </div>
-              <button
-                className="h-fit w-64"
-                onClick={() => {
-                  if (scoreID) {
-                    lookupScore(scoreID).then(async (score) => {
-                      const ranked_year = new Date(
-                        Date.parse(
-                          (await lookupMap(score.beatmapset.id)).ranked_date
-                        )
-                      ).getFullYear();
+              <div className="w-full py-12 h-1/3 bg-blue-400/10 flex flex-col flex-wrap place-content-center items-center space-y-1">
+                {renderTagsCheckboxes()}
+              </div>
+              <div className="h-1/3 w-full flex flex-col bg-red-400/10 place-content-center items-center space-y-1">
+                <button
+                  className="h-fit w-64"
+                  onClick={() => {
+                    if (scoreID) {
+                      lookupScore(scoreID).then(async (score) => {
+                        const ranked_year = new Date(
+                          Date.parse(
+                            (await lookupMap(score.beatmapset.id)).ranked_date
+                          )
+                        ).getFullYear();
 
-                      const beatmap: BeatmapSimple = {
-                        artist: score.beatmapset.artist,
-                        title: score.beatmapset.title,
-                        creator: score.beatmapset.creator,
-                        id: score.beatmapset.id,
-                        cover: score.beatmapset.covers.cover,
-                        rankYear: ranked_year,
-                      };
+                        const beatmap: BeatmapSimple = {
+                          artist: score.beatmapset.artist,
+                          title: score.beatmapset.title,
+                          creator: score.beatmapset.creator,
+                          id: score.beatmapset.id,
+                          cover: score.beatmapset.covers.cover,
+                          rankYear: ranked_year,
+                        };
 
-                      const player: PlayerSimple = {
-                        username: score.user.username,
-                        id: score.user.id,
-                        avatar: score.user.avatar_url,
-                        country_code: score.user.country_code,
-                      };
-                      setNewGuessableScore({
-                        id: score.id,
-                        player: player,
-                        beatmap: beatmap,
-                        year: new Date(score.ended_at).getFullYear(),
-                        day_index: 0,
-                        pp: pp || 0,
-                        yt_link: ytLink || "",
-                        mods: score.mods,
-                        tags: selectedTags,
-                        acc: score.accuracy,
-                        misscount: score.statistics.miss,
+                        const player: PlayerSimple = {
+                          username: score.user.username,
+                          id: score.user.id,
+                          avatar: score.user.avatar_url,
+                          country_code: score.user.country_code,
+                        };
+                        setNewGuessableScore({
+                          id: score.id,
+                          player: player,
+                          beatmap: beatmap,
+                          year: new Date(score.ended_at).getFullYear(),
+                          day_index: 0,
+                          pp: pp || 0,
+                          yt_link: ytLink || "",
+                          mods: score.mods,
+                          tags: selectedTags,
+                          acc: score.accuracy,
+                          misscount: score.statistics.miss,
+                        });
                       });
-                    });
-                  }
-                }}
-              >
-                Look up
-              </button>
-              <div className="flex flex-col place-content-center items-center space-y-4">
-                {newGuessableScore ? (
-                  <>
-                    <BeatmapCard beatmap={newGuessableScore?.beatmap} />
-                    <PlayerCard player={newGuessableScore.player} />
-                    <p>
-                      {newGuessableScore.pp}pp in {newGuessableScore.year}
-                    </p>
-                    <iframe
-                      className="w-64 h-fit"
-                      id="ytplayer"
-                      itemType="text/html"
-                      width="640"
-                      height="360"
-                      src={`https://www.youtube.com/embed/${
-                        newGuessableScore.yt_link.split("=")[1]
-                      }`}
-                    ></iframe>
-                  </>
-                ) : null}
+                    }
+                  }}
+                >
+                  Look up
+                </button>
+                <div className="flex flex-col place-content-center items-center space-y-4">
+                  {newGuessableScore ? (
+                    <>
+                      <BeatmapCard beatmap={newGuessableScore?.beatmap} />
+                      <PlayerCard player={newGuessableScore.player} />
+                      <p>
+                        {newGuessableScore.pp}pp in {newGuessableScore.year}
+                      </p>
+                      <iframe
+                        className="w-64 h-fit"
+                        id="ytplayer"
+                        itemType="text/html"
+                        width="640"
+                        height="360"
+                        src={`https://www.youtube.com/embed/${
+                          newGuessableScore.yt_link.split("=")[1]
+                        }`}
+                      ></iframe>
+                    </>
+                  ) : null}
+                </div>
+                <button
+                  className="w-64 h-fit"
+                  onClick={() => {
+                    if (newGuessableScore) {
+                      addNewScore(newGuessableScore).then(() => {
+                        window.location.reload();
+                      });
+                    } else alert("an error occurred");
+                  }}
+                >
+                  Submit
+                </button>
               </div>
-              <button
-                className="w-64 h-fit"
-                onClick={() => {
-                  if (newGuessableScore) {
-                    addNewScore(newGuessableScore).then(() => {
-                      window.location.reload();
-                    });
-                  } else alert("an error occurred");
-                }}
-              >
-                Submit
-              </button>
             </div>
-            <div className="w-2/3 h-full flex flex-col place-content-center items-center">
+            <div className="w-2/3 h-full flex flex-col place-content-start items-center overflow-scroll">
               {allScores.length ? renderScores() : <Loading />}
             </div>
           </div>

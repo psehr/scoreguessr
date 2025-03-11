@@ -71,7 +71,7 @@ export default function StatsScreen({
             <div className="h-1/2 font-bold flex flex-col place-content-center items-center text-2xl space-y-4"></div>
           </div>
         </div> */}
-        <div className="border border-green-400 flex flex-col w-full h-1/3 md:w-1/3 md:h-full bg-white/10 rounded-xl place-content-start items-center text-xl shadow-md">
+        <div className="border border-green-400 flex flex-col w-full h-1/3 md:w-1/2 md:h-full bg-white/10 rounded-xl place-content-start items-center text-xl shadow-md">
           <div className="flex flex-col px-8 h-full w-full place-content-start items-center">
             <div className="h-1/5 font-bold flex flex-col place-content-center items-center text-xl md:text-2xl space-y-4">
               <p className="font-semibold underline bg-black/30 pb-1 px-8 rounded-xl shadow-lg">
@@ -125,7 +125,7 @@ export default function StatsScreen({
             </div>
           </div>
         </div>
-        <div className="border border-blue-400 px-8 flex flex-col w-full h-1/3 md:w-1/3 md:h-full bg-white/10 rounded-xl place-content-start items-center text-xl shadow-md">
+        <div className="border border-blue-400 px-8 flex flex-col w-full h-1/3 md:w-1/2 md:h-full bg-white/10 rounded-xl place-content-start items-center text-xl shadow-md">
           {userData && todayScore ? (
             <div className="flex flex-col h-full w-full place-content-center items-center">
               <div className="h-1/5 font-bold flex flex-col place-content-center items-center text-xl md:text-2xl">
